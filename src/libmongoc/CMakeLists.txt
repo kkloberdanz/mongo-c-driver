@@ -825,6 +825,8 @@ if (MONGOC_ENABLE_STATIC_BUILD)
          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/mongoc>
          $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
          $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/mongoc>
+         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/libbson/src/bson>
+         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/libbson/src>
          $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/../../src/common>
          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/../../src>
          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/../../src/common>
