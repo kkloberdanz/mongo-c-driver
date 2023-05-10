@@ -20,7 +20,7 @@
 
 #define BSON_INSIDE
 
-#include "bson-compat.h"
+#include <bson/bson-compat.h>
 
 #include <string.h>
 #include <time.h>

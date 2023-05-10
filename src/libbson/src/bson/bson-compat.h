@@ -64,7 +64,7 @@
 #endif
 
 
-#include "bson-macros.h"
+#include <bson/bson-macros.h>
 
 
 #include <errno.h>
