@@ -56,7 +56,7 @@
 #include "mongoc-stream-socket.h"
 #include "mongoc-uri.h"
 #include "mongoc-write-concern.h"
-#include "mongoc-version.h"
+#include <mongoc/mongoc-version.h>
 #include "mongoc-version-functions.h"
 #ifdef MONGOC_ENABLE_SSL
 #include "mongoc-rand.h"
