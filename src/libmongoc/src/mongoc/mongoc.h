@@ -30,7 +30,7 @@
 #include "mongoc-client-pool.h"
 #include "mongoc-client-side-encryption.h"
 #include "mongoc-collection.h"
-#include "mongoc-config.h"
+#include <mongoc/mongoc-config.h>
 #include "mongoc-cursor.h"
 #include "mongoc-database.h"
 #include "mongoc-index.h"
