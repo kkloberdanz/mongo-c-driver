@@ -790,6 +790,8 @@ target_include_directories (
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/../../src/common>
       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/../../src>
       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/../../src/common>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/../libbson/src/bson>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/../libbson/src>
 )
 
 set_target_properties (mongoc_shared PROPERTIES VERSION 0.0.0 SOVERSION 0)
@@ -828,6 +830,8 @@ if (MONGOC_ENABLE_STATIC_BUILD)
          $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/../../src/common>
          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/../../src>
          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/../../src/common>
+         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/../libbson/src/bson>
+         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/../libbson/src>
    )
    set_target_properties (mongoc_static PROPERTIES VERSION 0.0.0)
    set_target_properties (mongoc_static PROPERTIES OUTPUT_NAME "${MONGOC_OUTPUT_BASENAME}-static-${MONGOC_API_VERSION}")
