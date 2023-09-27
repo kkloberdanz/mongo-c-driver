@@ -16,6 +16,7 @@
 
 #include "mongoc-prelude.h"
 
+#include <stdatomic.h>
 
 #ifndef MONGOC_HANDSHAKE_PRIVATE_H
 #define MONGOC_HANDSHAKE_PRIVATE_H
@@ -115,7 +116,7 @@ typedef struct _mongoc_handshake_t {
    optional_int32 env_memory_mb;
    char *env_region;
 
-   bool frozen;
+   atomic_bool frozen;
 } mongoc_handshake_t;
 
 void
