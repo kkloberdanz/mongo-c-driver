@@ -21,6 +21,8 @@
 #ifndef MONGOC_HANDSHAKE_PRIVATE_H
 #define MONGOC_HANDSHAKE_PRIVATE_H
 
+#include "bson/bson.h"
+
 #include "mongoc.h"
 
 BSON_BEGIN_DECLS
@@ -116,7 +118,7 @@ typedef struct _mongoc_handshake_t {
    optional_int32 env_memory_mb;
    char *env_region;
 
-   atomic_bool frozen;
+   bson_atomic_bool frozen;
 } mongoc_handshake_t;
 
 void
