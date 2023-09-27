@@ -94,7 +94,6 @@ test_mongoc_scram_iteration_count (void)
    test_iteration_count (10000, true);
 }
 
-
 #define MONGOC_SCRAM_CACHE_SIZE 64
 
 enum {
