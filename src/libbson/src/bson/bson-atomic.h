@@ -30,6 +30,19 @@
 #endif
 
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+/* stdatomic.h was added in C11 */
+#define MONGOC_HAS_STDATOMIC
+#endif
+
+#if defined(MONGOC_HAS_STDATOMIC)
+#include <stdatomic.h>
+#define bson_atomic_bool atomic_bool
+#else
+/* MUST BE USED WITH CORRESPONDING bson_atomic_bool_* MACROS! */
+#define bson_atomic_bool bool
+#endif
+
 BSON_BEGIN_DECLS
 
 enum bson_memory_order {
@@ -452,6 +465,26 @@ _bson_emul_atomic_ptr_exchange (void *volatile *val,
 
 BSON_EXPORT (void)
 bson_thrd_yield (void);
+
+BSON_EXPORT (void)
+_unlock_emul_atomic (void);
+
+BSON_EXPORT (void)
+_lock_emul_atomic (void);
+
+#if defined(MONGOC_HAS_STDATOMIC)
+#define bson_atomic_bool_set(dst, src) \
+   do {                                \
+      (dst) = (src);                   \
+   } while (0)
+#else
+#define bson_atomic_bool_set(dst, src) \
+   do {                                \
+      _lock_emul_atomic ();            \
+      (dst) = (src);                   \
+      _unlock_emul_atomic ();          \
+   } while (0)
+#endif
 
 #if (defined(_MSC_VER) && !defined(_M_IX86)) || (defined(__LP64__) && __LP64__)
 /* (64-bit intrinsics are only available in x64) */

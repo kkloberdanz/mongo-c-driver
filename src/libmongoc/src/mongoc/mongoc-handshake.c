@@ -537,7 +537,7 @@ _mongoc_handshake_init (void)
    _set_compiler_info (_mongoc_handshake_get ());
    _set_flags (_mongoc_handshake_get ());
 
-   _mongoc_handshake_get ()->frozen = false;
+   bson_atomic_bool_set(_mongoc_handshake_get ()->frozen, false);
    bson_mutex_init (&gHandshakeLock);
 }
 
@@ -748,7 +748,7 @@ _mongoc_handshake_build_doc_with_application (const char *appname)
 void
 _mongoc_handshake_freeze (void)
 {
-   _mongoc_handshake_get ()->frozen = true;
+   bson_atomic_bool_set(_mongoc_handshake_get ()->frozen, true);
 }
 
 /*
@@ -802,7 +802,9 @@ mongoc_handshake_data_append (const char *driver_name,
 
    bson_mutex_lock (&gHandshakeLock);
 
-   if (_mongoc_handshake_get ()->frozen) {
+   bson_atomic_bool frozen;
+   bson_atomic_bool_set(frozen, _mongoc_handshake_get ()->frozen);
+   if (frozen) {
       bson_mutex_unlock (&gHandshakeLock);
       return false;
    }
