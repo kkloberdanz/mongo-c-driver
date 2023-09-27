@@ -1,1 +1,2 @@
 race:mongoc_counter*
+race:test_mongoc_scram_cache_invalidation
