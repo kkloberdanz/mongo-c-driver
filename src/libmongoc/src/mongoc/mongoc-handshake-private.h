@@ -16,8 +16,6 @@
 
 #include "mongoc-prelude.h"
 
-#include <stdatomic.h>
-
 #ifndef MONGOC_HANDSHAKE_PRIVATE_H
 #define MONGOC_HANDSHAKE_PRIVATE_H
 

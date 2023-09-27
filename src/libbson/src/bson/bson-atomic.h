@@ -30,7 +30,8 @@
 #endif
 
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_ATOMICS__)
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && \
+   (!defined(__STDC_NO_ATOMICS__))
 /* stdatomic.h was added in C11 */
 #define MONGOC_HAS_STDATOMIC
 #endif
