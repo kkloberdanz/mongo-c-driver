@@ -468,10 +468,10 @@ BSON_EXPORT (void)
 bson_thrd_yield (void);
 
 BSON_EXPORT (void)
-_unlock_emul_atomic (void);
+_mongoc_atomic_mutex_lock (void);
 
 BSON_EXPORT (void)
-_lock_emul_atomic (void);
+_mongoc_atomic_mutex_unlock (void);
 
 #if defined(MONGOC_HAS_STDATOMIC)
 #define bson_atomic_bool_set(dst, src) \
@@ -481,9 +481,9 @@ _lock_emul_atomic (void);
 #else
 #define bson_atomic_bool_set(dst, src) \
    do {                                \
-      _lock_emul_atomic ();            \
+      _mongoc_atomic_mutex_lock ();    \
       (dst) = (src);                   \
-      _unlock_emul_atomic ();          \
+      _mongoc_atomic_mutex_unlock ();  \
    } while (0)
 #endif
 

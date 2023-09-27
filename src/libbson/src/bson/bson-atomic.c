@@ -17,6 +17,8 @@
 
 #include <bson/bson-atomic.h>
 
+#include "common-thread-private.h"
+
 #ifdef BSON_OS_UNIX
 /* For sched_yield() */
 #include <sched.h>
@@ -59,21 +61,21 @@ void
 _lock_emul_atomic (void)
 {
    int i;
-   if (bson_atomic_int8_compare_exchange_strong (
+   if (bson_atomic_int8_compare_exchange_weak (
           &gEmulAtomicLock, 0, 1, bson_memory_order_acquire) == 0) {
       /* Successfully took the spinlock */
       return;
    }
    /* Failed. Try taking ten more times, then begin sleeping. */
    for (i = 0; i < 10; ++i) {
-      if (bson_atomic_int8_compare_exchange_strong (
+      if (bson_atomic_int8_compare_exchange_weak (
              &gEmulAtomicLock, 0, 1, bson_memory_order_acquire) == 0) {
          /* Succeeded in taking the lock */
          return;
       }
    }
    /* Still don't have the lock. Spin and yield */
-   while (bson_atomic_int8_compare_exchange_strong (
+   while (bson_atomic_int8_compare_exchange_weak (
              &gEmulAtomicLock, 0, 1, bson_memory_order_acquire) != 0) {
       bson_thrd_yield ();
    }
@@ -289,4 +291,23 @@ _bson_emul_atomic_ptr_exchange (void *volatile *p,
    *p = n;
    _unlock_emul_atomic ();
    return ret;
+}
+
+static bson_mutex_t atomic_mtx;
+static bson_once_t atomic_mtx_init_once_control = BSON_ONCE_INIT;
+
+static BSON_ONCE_FUN (mongoc_atomic_mutex_init)
+{
+   bson_mutex_init (&atomic_mtx);
+
+   BSON_ONCE_RETURN;
+}
+
+void _mongoc_atomic_mutex_lock() {
+   bson_once (&atomic_mtx_init_once_control ,mongoc_atomic_mutex_init);
+   bson_mutex_lock(&atomic_mtx);
+}
+
+void _mongoc_atomic_mutex_unlock() {
+   bson_mutex_unlock(&atomic_mtx);
 }

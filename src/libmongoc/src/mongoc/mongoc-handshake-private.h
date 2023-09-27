@@ -117,6 +117,7 @@ typedef struct _mongoc_handshake_t {
    char *env_region;
 
    bson_atomic_bool frozen;
+   // bool frozen;
 } mongoc_handshake_t;
 
 void

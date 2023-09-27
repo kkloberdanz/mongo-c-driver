@@ -749,6 +749,7 @@ void
 _mongoc_handshake_freeze (void)
 {
    bson_atomic_bool_set(_mongoc_handshake_get ()->frozen, true);
+   // bson_atomic_i8_load(&_mongoc_handshake_get ()->frozen, true);
 }
 
 /*
