@@ -303,11 +303,11 @@ static BSON_ONCE_FUN (mongoc_atomic_mutex_init)
    BSON_ONCE_RETURN;
 }
 
-void _mongoc_atomic_mutex_lock() {
-   bson_once (&atomic_mtx_init_once_control ,mongoc_atomic_mutex_init);
+void _mongoc_atomic_mutex_lock(void) {
+   bson_once (&atomic_mtx_init_once_control, mongoc_atomic_mutex_init);
    bson_mutex_lock(&atomic_mtx);
 }
 
-void _mongoc_atomic_mutex_unlock() {
+void _mongoc_atomic_mutex_unlock(void) {
    bson_mutex_unlock(&atomic_mtx);
 }
