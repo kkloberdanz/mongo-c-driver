@@ -111,7 +111,6 @@ fi
 # Sanitizer environment variables.
 export ASAN_OPTIONS="detect_leaks=1 abort_on_error=1 symbolize=1"
 export ASAN_SYMBOLIZER_PATH="/opt/mongodbtoolchain/v3/bin/llvm-symbolizer"
-export TSAN_OPTIONS="suppressions=./.tsan-suppressions"
 export UBSAN_OPTIONS="print_stacktrace=1 abort_on_error=1"
 
 declare -a test_args=(
