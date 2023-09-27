@@ -20,8 +20,11 @@ else()
     check_symbol_exists(res_search "${resolve_headers}" _MONGOC_HAVE_RES_SEARCH_RESOLV)
     check_symbol_exists(res_ndestroy "${resolve_headers}" _MONGOC_HAVE_RES_NDESTROY_RESOLV)
     check_symbol_exists(res_nclose "${resolve_headers}" _MONGOC_HAVE_RES_NCLOSE_RESOLV)
-    if((_MONGOC_HAVE_RES_NSEARCH_RESOLV OR _MONGOC_HAVE_RES_SEARCH_RESOLV)
-        AND (_MONGOC_HAVE_RES_NDESTROY_RESOLV OR _MONGOC_HAVE_RES_NCLOSE_RESOLV))
+    if(
+        (_MONGOC_HAVE_RES_NSEARCH_RESOLV
+            AND (_MONGOC_HAVE_RES_NDESTROY_RESOLV OR _MONGOC_HAVE_RES_NCLOSE_RESOLV))
+        OR _MONGOC_HAVE_RES_SEARCH_RESOLV
+    )
         set(RESOLVE_LIB_NAME resolv)
     else()
         # Can we use name resolution with just libc?
@@ -30,19 +33,22 @@ else()
         check_symbol_exists(res_search "${resolve_headers}" _MONGOC_HAVE_RES_SEARCH_NOLINK)
         check_symbol_exists(res_ndestroy "${resolve_headers}" _MONGOC_HAVE_RES_NDESTROY_NOLINK)
         check_symbol_exists(res_nclose "${resolve_headers}" _MONGOC_HAVE_RES_NCLOSE_NOLINK)
-        if((_MONGOC_HAVE_RES_NSEARCH_NOLINK OR _MONGOC_HAVE_RES_SEARCH_NOLINK)
-            AND (_MONGOC_HAVE_RES_NDESTROY_NOLINK OR _MONGOC_HAVE_RES_NCLOSE_NOLINK))
+        if(
+            (_MONGOC_HAVE_RES_NSEARCH_NOLINK
+                AND (_MONGOC_HAVE_RES_NDESTROY_NOLINK OR _MONGOC_HAVE_RES_NCLOSE_NOLINK))
+            OR _MONGOC_HAVE_RES_SEARCH_NOLINK
+        )
             set(resolve_is_libc TRUE)
             message(VERBOSE "Name resolution is provided by the C runtime")
         endif()
     endif()
 endif()
 
-_mongo_pick(MONGOC_HAVE_DNSAPI 1 0 _MONGOC_HAVE_DNSAPI)
-_mongo_pick(MONGOC_HAVE_RES_NSEARCH 1 0 [[_MONGOC_HAVE_RES_NSEARCH_NOLINK OR _MONGOC_HAVE_RES_NSEARCH_RESOLV]])
-_mongo_pick(MONGOC_HAVE_RES_SEARCH 1 0 [[_MONGOC_HAVE_RES_SEARCH_NOLINK OR _MONGOC_HAVE_RES_SEARCH_RESOLV]])
-_mongo_pick(MONGOC_HAVE_RES_NDESTROY 1 0 [[_MONGOC_HAVE_RES_NDESTROY_NOLINK OR _MONGOC_HAVE_RES_NDESTROY_RESOLV]])
-_mongo_pick(MONGOC_HAVE_RES_NCLOSE 1 0 [[_MONGOC_HAVE_RES_NCLOSE_NOLINK OR _MONGOC_HAVE_RES_NCLOSE_RESOLV]])
+mongo_pick(MONGOC_HAVE_DNSAPI 1 0 _MONGOC_HAVE_DNSAPI)
+mongo_pick(MONGOC_HAVE_RES_NSEARCH 1 0 [[_MONGOC_HAVE_RES_NSEARCH_NOLINK OR _MONGOC_HAVE_RES_NSEARCH_RESOLV]])
+mongo_pick(MONGOC_HAVE_RES_SEARCH 1 0 [[_MONGOC_HAVE_RES_SEARCH_NOLINK OR _MONGOC_HAVE_RES_SEARCH_RESOLV]])
+mongo_pick(MONGOC_HAVE_RES_NDESTROY 1 0 [[_MONGOC_HAVE_RES_NDESTROY_NOLINK OR _MONGOC_HAVE_RES_NDESTROY_RESOLV]])
+mongo_pick(MONGOC_HAVE_RES_NCLOSE 1 0 [[_MONGOC_HAVE_RES_NCLOSE_NOLINK OR _MONGOC_HAVE_RES_NCLOSE_RESOLV]])
 
 if(RESOLVE_LIB_NAME OR resolve_is_libc)
     # Define the resolver interface:
