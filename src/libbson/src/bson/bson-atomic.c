@@ -59,21 +59,21 @@ void
 _lock_emul_atomic (void)
 {
    int i;
-   if (bson_atomic_int8_compare_exchange_weak (
+   if (bson_atomic_int8_compare_exchange_strong (
           &gEmulAtomicLock, 0, 1, bson_memory_order_acquire) == 0) {
       /* Successfully took the spinlock */
       return;
    }
    /* Failed. Try taking ten more times, then begin sleeping. */
    for (i = 0; i < 10; ++i) {
-      if (bson_atomic_int8_compare_exchange_weak (
+      if (bson_atomic_int8_compare_exchange_strong (
              &gEmulAtomicLock, 0, 1, bson_memory_order_acquire) == 0) {
          /* Succeeded in taking the lock */
          return;
       }
    }
    /* Still don't have the lock. Spin and yield */
-   while (bson_atomic_int8_compare_exchange_weak (
+   while (bson_atomic_int8_compare_exchange_strong (
              &gEmulAtomicLock, 0, 1, bson_memory_order_acquire) != 0) {
       bson_thrd_yield ();
    }
