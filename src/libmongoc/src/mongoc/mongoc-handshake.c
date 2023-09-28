@@ -38,6 +38,16 @@
 
 #include <bson-dsl.h>
 
+#define bson_atomic_set(dst, src) \
+   do { \
+      __atomic_store (dst, src, __ATOMIC_SEQ_CST); \
+   } while (0)
+
+#define bson_atomic_get(dst, src) \
+   do { \
+      __atomic_load (src, dst, __ATOMIC_SEQ_CST); \
+   } while (0)
+
 /*
  * Global handshake data instance. Initialized at startup from mongoc_init
  *
@@ -537,7 +547,8 @@ _mongoc_handshake_init (void)
    _set_compiler_info (_mongoc_handshake_get ());
    _set_flags (_mongoc_handshake_get ());
 
-   _mongoc_handshake_get ()->frozen = false;
+   bool false_var = false;
+   bson_atomic_set (&_mongoc_handshake_get ()->frozen, &false_var);
    bson_mutex_init (&gHandshakeLock);
 }
 
@@ -748,7 +759,8 @@ _mongoc_handshake_build_doc_with_application (const char *appname)
 void
 _mongoc_handshake_freeze (void)
 {
-   _mongoc_handshake_get ()->frozen = true;
+   bool true_var = true;
+   bson_atomic_set (&_mongoc_handshake_get ()->frozen, &true_var);
 }
 
 /*
@@ -802,7 +814,9 @@ mongoc_handshake_data_append (const char *driver_name,
 
    bson_mutex_lock (&gHandshakeLock);
 
-   if (_mongoc_handshake_get ()->frozen) {
+   bool frozen;
+   bson_atomic_get (&frozen, &_mongoc_handshake_get ()->frozen);
+   if (frozen) {
       bson_mutex_unlock (&gHandshakeLock);
       return false;
    }
