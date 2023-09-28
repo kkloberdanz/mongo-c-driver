@@ -44,6 +44,37 @@ BSON_BEGIN_DECLS
 /* platform has no fixed max size. It can just occupy the remaining
  * available space in the document. */
 
+#ifdef _WIN32
+
+#define bson_atomic_bool char
+
+#define bson_atomic_bool_set(dst, src)   \
+   do {                                  \
+      _InterlockedExchange8 (dst, *src); \
+   } while (0)
+
+#define bson_atomic_bool_get(dst, src) \
+   do {                                \
+      dst = _InterlockedOr8 (src, 0);  \
+   } while (0)
+
+#else
+
+#define bson_atomic_bool bool
+
+#define bson_atomic_bool_set(dst, src)             \
+   do {                                            \
+      __atomic_store (dst, src, __ATOMIC_SEQ_CST); \
+   } while (0)
+
+#define bson_atomic_bool_get(dst, src)            \
+   do {                                           \
+      __atomic_load (src, dst, __ATOMIC_SEQ_CST); \
+   } while (0)
+
+#endif
+
+
 /* When adding a new field to mongoc-config.h.in, update this! */
 typedef enum {
    /* The bit position (from the RHS) of each config flag. Do not reorder. */
@@ -109,7 +140,7 @@ typedef struct _mongoc_handshake_t {
    char *platform;
    char *compiler_info;
    char *flags;
-   
+
    mongoc_handshake_env_t env;
    optional_int32 env_timeout_sec;
    optional_int32 env_memory_mb;
@@ -125,8 +156,7 @@ void
 _mongoc_handshake_cleanup (void);
 
 bson_t *
-_mongoc_handshake_build_doc_with_application (
-                                              const char *application);
+_mongoc_handshake_build_doc_with_application (const char *application);
 
 void
 _mongoc_handshake_freeze (void);
