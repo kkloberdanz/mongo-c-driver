@@ -38,6 +38,20 @@
 
 #include <bson-dsl.h>
 
+#ifdef _WIN32
+
+#define bson_atomic_set(dst, src) \
+   do { \
+          _InterlockedExchange(dst, *src);
+   } while (0)
+
+#define bson_atomic_get(dst, src) \
+   do { \
+      dst = _InterlockedOr (src, 0); \
+   } while (0)
+
+#else
+
 #define bson_atomic_set(dst, src) \
    do { \
       __atomic_store (dst, src, __ATOMIC_SEQ_CST); \
@@ -47,6 +61,8 @@
    do { \
       __atomic_load (src, dst, __ATOMIC_SEQ_CST); \
    } while (0)
+
+#endif
 
 /*
  * Global handshake data instance. Initialized at startup from mongoc_init
