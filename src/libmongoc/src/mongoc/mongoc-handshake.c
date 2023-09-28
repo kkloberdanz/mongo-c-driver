@@ -527,9 +527,12 @@ _free_platform_string (mongoc_handshake_t *handshake)
    bson_free (handshake->flags);
 }
 
+static bson_shared_mutex_t g_frozen_rwlock;
+
 void
 _mongoc_handshake_init (void)
 {
+   bson_shared_mutex_init (&g_frozen_rwlock);
    _get_system_info (_mongoc_handshake_get ());
    _get_driver_info (_mongoc_handshake_get ());
    _set_platform_string (_mongoc_handshake_get ());
@@ -748,7 +751,9 @@ _mongoc_handshake_build_doc_with_application (const char *appname)
 void
 _mongoc_handshake_freeze (void)
 {
+   bson_shared_mutex_lock (&g_frozen_rwlock);
    _mongoc_handshake_get ()->frozen = true;
+   bson_shared_mutex_unlock (&g_frozen_rwlock);
 }
 
 /*
@@ -802,7 +807,10 @@ mongoc_handshake_data_append (const char *driver_name,
 
    bson_mutex_lock (&gHandshakeLock);
 
-   if (_mongoc_handshake_get ()->frozen) {
+   bson_shared_mutex_lock (&g_frozen_rwlock);
+   bool frozen = _mongoc_handshake_get ()->frozen;
+   bson_shared_mutex_unlock (&g_frozen_rwlock);
+   if (frozen) {
       bson_mutex_unlock (&gHandshakeLock);
       return false;
    }
