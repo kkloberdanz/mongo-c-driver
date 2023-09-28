@@ -805,7 +805,7 @@ mongoc_handshake_data_append (const char *driver_name,
    bson_mutex_lock (&gHandshakeLock);
 
    bool frozen;
-   bson_atomic_bool_get (&frozen, &_mongoc_handshake_get ()->frozen);
+   bson_atomic_bool_get (frozen, &_mongoc_handshake_get ()->frozen);
    if (frozen) {
       bson_mutex_unlock (&gHandshakeLock);
       return false;
