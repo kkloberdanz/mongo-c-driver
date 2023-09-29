@@ -48,16 +48,15 @@ BSON_BEGIN_DECLS
 
 #define bson_atomic_bool char
 
-#define bson_atomic_bool_set(dst, src)  \
-   do {                                 \
-      _InterlockedExchange (dst, *src); \
+#define bson_atomic_bool_set(dst, src)                            \
+   do {                                                           \
+      _InterlockedExchange ((volatile long *) dst, *src ? 1 : 0); \
    } while (0)
 
-#define bson_atomic_bool_get(dst, src) \
-   do {                                \
-      dst = _InterlockedOr (src, 0);   \
+#define bson_atomic_bool_get(dst, src)                 \
+   do {                                                \
+      dst = _InterlockedOr ((volatile long *) src, 0); \
    } while (0)
-
 
 #elif defined(_WIN32)
 
