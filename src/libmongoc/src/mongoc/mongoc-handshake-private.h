@@ -44,7 +44,22 @@ BSON_BEGIN_DECLS
 /* platform has no fixed max size. It can just occupy the remaining
  * available space in the document. */
 
-#ifdef _WIN32
+#if defined(__MINGW32__)
+
+#define bson_atomic_bool char
+
+#define bson_atomic_bool_set(dst, src)  \
+   do {                                 \
+      _InterlockedExchange (dst, *src); \
+   } while (0)
+
+#define bson_atomic_bool_get(dst, src) \
+   do {                                \
+      dst = _InterlockedOr (src, 0);   \
+   } while (0)
+
+
+#elif defined(_WIN32)
 
 #define bson_atomic_bool char
 
