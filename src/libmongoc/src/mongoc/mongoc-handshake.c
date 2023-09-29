@@ -75,10 +75,6 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 #elif defined(__STDC__) && __STDC_VERSION__ >= 201112L && \
    !defined(__STDC_NO_ATOMICS__)
 
-#include <stdatomic.h>
-
-typedef char atomic_bool;
-
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
                       const volatile bson_atomic_bool *src)
