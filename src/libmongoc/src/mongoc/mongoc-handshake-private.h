@@ -51,6 +51,7 @@ typedef long bson_atomic_bool;
 
 #elif defined(_WIN32)
 
+/* Windows atomic intrinsics don't allow a bool, so use closest type */
 typedef char bson_atomic_bool;
 
 #elif defined(__STDC__) && __STDC_VERSION__ >= 201112L && \
