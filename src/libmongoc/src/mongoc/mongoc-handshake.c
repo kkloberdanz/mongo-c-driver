@@ -72,6 +72,7 @@ bson_atomic_bool_get (bson_atomic_bool *src)
     (!defined(__clang_major__))) /* clang 7 has an internal compiler error, \
                                     which causes clang to segfault */
 
+void
 bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
    *(dst) = *(src);
