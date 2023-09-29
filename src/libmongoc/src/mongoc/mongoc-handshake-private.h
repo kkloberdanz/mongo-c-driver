@@ -72,23 +72,6 @@ BSON_BEGIN_DECLS
       dst = _InterlockedOr8 (src, 0);  \
    } while (0)
 
-#elif defined(__STDC__) && __STDC_VERSION__ >= 201112L && \
-   !defined(__STDC_NO_ATOMICS__)
-
-#include <stdatomic.h>
-
-#define bson_atomic_bool atomic_bool
-
-#define bson_atomic_bool_set(dst, src) \
-   do {                                \
-      (dst) = (src);                   \
-   } while (0)
-
-#define bson_atomic_bool_get(dst, src) \
-   do {                                \
-      (dst) = (src);                   \
-   } while (0)
-
 #else
 
 #define bson_atomic_bool bool
