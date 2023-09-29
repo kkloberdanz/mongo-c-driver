@@ -57,7 +57,7 @@ typedef char bson_atomic_bool;
 
 #include <stdatomic.h>
 
-typedef char atomic_bool;
+typedef atomic_bool bson_atomic_bool;
 
 #else
 
