@@ -42,7 +42,7 @@
 
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      const volatile bson_atomic_bool *src)
+                      volatile bson_atomic_bool *src)
 {
    _InterlockedExchange (dst, src);
 }
@@ -57,7 +57,7 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      const volatile bson_atomic_bool *src)
+                      volatile bson_atomic_bool *src)
 {
    _InterlockedExchange8 (dst, src);
 }
@@ -73,7 +73,7 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      const volatile bson_atomic_bool *src)
+                      volatile bson_atomic_bool *src)
 {
    *(dst) = *(src);
 }
@@ -88,13 +88,13 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      const volatile bson_atomic_bool *src)
+                      volatile bson_atomic_bool *src)
 {
    __atomic_store (dst, src, __ATOMIC_SEQ_CST);
 }
 
 bson_atomic_bool
-bson_atomic_bool_get (const volatile bson_atomic_bool *src)
+bson_atomic_bool_get (volatile bson_atomic_bool *src)
 {
    bson_atomic_bool dst;
    __atomic_load (src, &dst, __ATOMIC_SEQ_CST);
