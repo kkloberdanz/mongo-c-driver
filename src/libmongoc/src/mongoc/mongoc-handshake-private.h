@@ -54,8 +54,12 @@ typedef long bson_atomic_bool;
 /* Windows atomic intrinsics don't allow a bool, so use closest type */
 typedef char bson_atomic_bool;
 
-#elif defined(__STDC__) && __STDC_VERSION__ >= 201112L && \
-   !defined(__STDC_NO_ATOMICS__)
+#elif defined(__STDC__) && __STDC_VERSION__ >= 201112L &&                   \
+   !defined(__STDC_NO_ATOMICS__) &&                                         \
+   ((defined(__clang_major__) && (__clang_major__ > 7)) ||                  \
+    (!defined(__clang_major__))) /* clang 7 has an internal compiler error, \
+                                    which causes clang to segfault */
+
 
 #include <stdatomic.h>
 
