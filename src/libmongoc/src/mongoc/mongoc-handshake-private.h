@@ -46,45 +46,56 @@ BSON_BEGIN_DECLS
 
 #if defined(__MINGW32__)
 
-#define bson_atomic_bool char
+typedef long bson_atomic_bool;
 
-#define bson_atomic_bool_set(dst, src)                            \
-   do {                                                           \
-      _InterlockedExchange ((volatile long *) dst, *src ? 1 : 0); \
-   } while (0)
+static void
+bson_atomic_bool_set (volatile bson_atomic_bool *dst,
+                      const volatile bson_atomic_bool *src)
+{
+   _InterlockedExchange (dst, src);
+}
 
-#define bson_atomic_bool_get(dst, src)                 \
-   do {                                                \
-      dst = _InterlockedOr ((volatile long *) src, 0); \
-   } while (0)
+static bson_atomic_bool
+bson_atomic_bool_get (volatile bson_atomic_bool *src)
+{
+   return _InterlockedOr (src, 0);
+}
 
 #elif defined(_WIN32)
 
-#define bson_atomic_bool char
+typedef char bson_atomic_bool;
 
-#define bson_atomic_bool_set(dst, src)   \
-   do {                                  \
-      _InterlockedExchange8 (dst, *src); \
-   } while (0)
+static void
+bson_atomic_bool_set (volatile bson_atomic_bool *dst,
+                      const volatile bson_atomic_bool *src)
+{
+   _InterlockedExchange8 (dst, src);
+}
 
-#define bson_atomic_bool_get(dst, src) \
-   do {                                \
-      dst = _InterlockedOr8 (src, 0);  \
-   } while (0)
+static bson_atomic_bool
+bson_atomic_bool_get (volatile bson_atomic_bool *src)
+{
+   return _InterlockedOr8 (src, 0);
+}
 
 #else
 
-#define bson_atomic_bool bool
+typedef bool bson_atomic_bool;
 
-#define bson_atomic_bool_set(dst, src)             \
-   do {                                            \
-      __atomic_store (dst, src, __ATOMIC_SEQ_CST); \
-   } while (0)
+static void
+bson_atomic_bool_set (volatile bson_atomic_bool *dst,
+                      const volatile bson_atomic_bool *src)
+{
+   __atomic_store (dst, src, __ATOMIC_SEQ_CST);
+}
 
-#define bson_atomic_bool_get(dst, src)             \
-   do {                                            \
-      __atomic_load (src, &dst, __ATOMIC_SEQ_CST); \
-   } while (0)
+static bson_atomic_bool
+bson_atomic_bool_get (const volatile bson_atomic_bool *src)
+{
+   bson_atomic_bool dst;
+   __atomic_load (src, &dst, __ATOMIC_SEQ_CST);
+   return dst;
+}
 
 #endif
 
