@@ -104,18 +104,27 @@ enum {
    NUM_CACHE_TEST_THREADS = 3 * NUM_CACHE_TEST_USERS,
 };
 
-BSON_THREAD_FUN (_scram_cache_invalidation_thread, username_number_ptr)
+static int
+_test_skip_if_replica_set (void)
+{
+   char *replset_name = test_framework_replset_name ();
+   const bool is_replica_set = !replset_name;
+   bson_free (replset_name);
+   return is_replica_set;
+}
+
+static BSON_THREAD_FUN (_scram_cache_invalidation_thread, username_number_ptr)
 {
    bson_error_t error;
 
    int *pun_i_ptr = username_number_ptr;
    int i = *pun_i_ptr;
-   free (username_number_ptr);
+   bson_free (username_number_ptr);
 
    const char *password = "mypass";
    char *username = bson_strdup_printf ("cachetestuser%dX", i);
 
-   const char *uri_str = "mongodb://localhost:27017";
+   const char *uri_str = "mongodb://localhost:27017/";
    char *cache_test_user_uri =
       test_framework_add_user_password (uri_str, username, password);
    BSON_ASSERT (cache_test_user_uri);
@@ -152,7 +161,7 @@ BSON_THREAD_FUN (_scram_cache_invalidation_thread, username_number_ptr)
 }
 
 static void
-test_mongoc_scram_cache_invalidation (void)
+test_mongoc_scram_cache_invalidation (void *ctx)
 {
    mongoc_client_pool_t *pool = NULL;
    mongoc_client_t *client = NULL;
@@ -186,7 +195,7 @@ test_mongoc_scram_cache_invalidation (void)
 
    bson_thread_t threads[NUM_CACHE_TEST_THREADS];
    for (int i = 0; i < NUM_CACHE_TEST_THREADS; i++) {
-      int *username_number_ptr = malloc (sizeof (*username_number_ptr));
+      int *username_number_ptr = bson_malloc (sizeof (*username_number_ptr));
       *username_number_ptr = i % NUM_CACHE_TEST_USERS;
       int rc = mcommon_thread_create (
          &threads[i], _scram_cache_invalidation_thread, username_number_ptr);
@@ -788,8 +797,14 @@ test_scram_install (TestSuite *suite)
    TestSuite_Add (
       suite, "/scram/utf8_string_length", test_mongoc_utf8_string_length);
    TestSuite_Add (suite, "/scram/utf8_to_unicode", test_mongoc_utf8_to_unicode);
-   TestSuite_Add (
-      suite, "/scram/cache_invalidation", test_mongoc_scram_cache_invalidation);
+   TestSuite_AddFull (
+      suite,
+      "/scram/cache_invalidation",
+      test_mongoc_scram_cache_invalidation,
+      NULL,
+      NULL,
+      _test_skip_if_replica_set); /* this is testing scram cache invalidation,
+                                     no need to test on a replica set */
 #endif
    TestSuite_AddFull (suite,
                       "/scram/auth_tests",

@@ -67,8 +67,8 @@ BSON_BEGIN_DECLS
       __atomic_store (dst, src, __ATOMIC_SEQ_CST); \
    } while (0)
 
-#define bson_atomic_bool_get(dst, src)            \
-   do {                                           \
+#define bson_atomic_bool_get(dst, src)             \
+   do {                                            \
       __atomic_load (src, &dst, __ATOMIC_SEQ_CST); \
    } while (0)
 
