@@ -598,7 +598,7 @@ _mongoc_handshake_init (void)
    _set_compiler_info (_mongoc_handshake_get ());
    _set_flags (_mongoc_handshake_get ());
 
-   bool false_var = false;
+   bson_atomic_bool false_var = false;
    bson_atomic_bool_set (&_mongoc_handshake_get ()->frozen, &false_var);
    bson_mutex_init (&gHandshakeLock);
 }
@@ -810,7 +810,7 @@ _mongoc_handshake_build_doc_with_application (const char *appname)
 void
 _mongoc_handshake_freeze (void)
 {
-   bool true_var = true;
+   bson_atomic_bool true_var = true;
    bson_atomic_bool_set (&_mongoc_handshake_get ()->frozen, &true_var);
 }
 
