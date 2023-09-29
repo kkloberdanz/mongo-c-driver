@@ -46,6 +46,7 @@ BSON_BEGIN_DECLS
 
 #if defined(__MINGW32__)
 
+/* MinGW only has atomic intrinsics for long type */
 typedef long bson_atomic_bool;
 
 #elif defined(_WIN32)

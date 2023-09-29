@@ -43,7 +43,7 @@
 void
 bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
-   _InterlockedExchange (dst, src);
+   _InterlockedExchange (dst, *src);
 }
 
 bson_atomic_bool
@@ -57,7 +57,7 @@ bson_atomic_bool_get (bson_atomic_bool *src)
 void
 bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
-   _InterlockedExchange8 (dst, src);
+   _InterlockedExchange8 (dst, *src);
 }
 
 bson_atomic_bool
