@@ -48,54 +48,20 @@ BSON_BEGIN_DECLS
 
 typedef long bson_atomic_bool;
 
-static void
-bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      const volatile bson_atomic_bool *src)
-{
-   _InterlockedExchange (dst, src);
-}
-
-static bson_atomic_bool
-bson_atomic_bool_get (volatile bson_atomic_bool *src)
-{
-   return _InterlockedOr (src, 0);
-}
-
 #elif defined(_WIN32)
 
 typedef char bson_atomic_bool;
 
-static void
-bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      const volatile bson_atomic_bool *src)
-{
-   _InterlockedExchange8 (dst, src);
-}
+#elif defined(__STDC__) && __STDC_VERSION__ >= 201112L && \
+   !defined(__STDC_NO_ATOMICS__)
 
-static bson_atomic_bool
-bson_atomic_bool_get (volatile bson_atomic_bool *src)
-{
-   return _InterlockedOr8 (src, 0);
-}
+#include <stdatomic.h>
+
+typedef char atomic_bool;
 
 #else
 
 typedef bool bson_atomic_bool;
-
-static void
-bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      const volatile bson_atomic_bool *src)
-{
-   __atomic_store (dst, src, __ATOMIC_SEQ_CST);
-}
-
-static bson_atomic_bool
-bson_atomic_bool_get (const volatile bson_atomic_bool *src)
-{
-   bson_atomic_bool dst;
-   __atomic_load (src, &dst, __ATOMIC_SEQ_CST);
-   return dst;
-}
 
 #endif
 
