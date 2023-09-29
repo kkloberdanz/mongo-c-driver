@@ -41,14 +41,13 @@
 #if defined(__MINGW32__)
 
 void
-bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      volatile bson_atomic_bool *src)
+bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
    _InterlockedExchange (dst, src);
 }
 
 bson_atomic_bool
-bson_atomic_bool_get (volatile bson_atomic_bool *src)
+bson_atomic_bool_get (bson_atomic_bool *src)
 {
    return _InterlockedOr (src, 0);
 }
@@ -56,14 +55,13 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 #elif defined(_WIN32)
 
 void
-bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      volatile bson_atomic_bool *src)
+bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
    _InterlockedExchange8 (dst, src);
 }
 
 bson_atomic_bool
-bson_atomic_bool_get (volatile bson_atomic_bool *src)
+bson_atomic_bool_get (bson_atomic_bool *src)
 {
    return _InterlockedOr8 (src, 0);
 }
@@ -72,14 +70,13 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
    !defined(__STDC_NO_ATOMICS__)
 
 void
-bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      volatile bson_atomic_bool *src)
+bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
    *(dst) = *(src);
 }
 
 bson_atomic_bool
-bson_atomic_bool_get (volatile bson_atomic_bool *src)
+bson_atomic_bool_get (bson_atomic_bool *src)
 {
    return *src;
 }
@@ -87,14 +84,13 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 #else
 
 void
-bson_atomic_bool_set (volatile bson_atomic_bool *dst,
-                      volatile bson_atomic_bool *src)
+bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
    __atomic_store (dst, src, __ATOMIC_SEQ_CST);
 }
 
 bson_atomic_bool
-bson_atomic_bool_get (volatile bson_atomic_bool *src)
+bson_atomic_bool_get (bson_atomic_bool *src)
 {
    bson_atomic_bool dst;
    __atomic_load (src, &dst, __ATOMIC_SEQ_CST);
