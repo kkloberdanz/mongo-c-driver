@@ -66,12 +66,12 @@ bson_atomic_bool_get (bson_atomic_bool *src)
    return _InterlockedOr8 (src, 0);
 }
 
-#elif defined(__STDC__) && __STDC_VERSION__ >= 201112L &&                 \
-   !defined(__STDC_NO_ATOMICS__) &&                                       \
-   (__clang_major__ > 7) /* clang 7 has an internal compiler error, which \
-                            causes clang to segfault */
+#elif defined(__STDC__) && __STDC_VERSION__ >= 201112L &&                   \
+   !defined(__STDC_NO_ATOMICS__) &&                                         \
+   ((defined(__clang_major__) && (__clang_major__ > 7)) ||                  \
+    (!defined(__clang_major__))) /* clang 7 has an internal compiler error, \
+                                    which causes clang to segfault */
 
-void
 bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src)
 {
    *(dst) = *(src);
