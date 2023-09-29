@@ -40,8 +40,6 @@
 
 #if defined(__MINGW32__)
 
-typedef long bson_atomic_bool;
-
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
                       const volatile bson_atomic_bool *src)
@@ -56,8 +54,6 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 }
 
 #elif defined(_WIN32)
-
-typedef char bson_atomic_bool;
 
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
@@ -89,8 +85,6 @@ bson_atomic_bool_get (volatile bson_atomic_bool *src)
 }
 
 #else
-
-typedef bool bson_atomic_bool;
 
 void
 bson_atomic_bool_set (volatile bson_atomic_bool *dst,
