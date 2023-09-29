@@ -44,6 +44,16 @@ BSON_BEGIN_DECLS
 /* platform has no fixed max size. It can just occupy the remaining
  * available space in the document. */
 
+#if defined(__STDC__) && __STDC_VERSION__ >= 201112L &&                     \
+   !defined(__STDC_NO_ATOMICS__) &&                                         \
+   ((defined(__clang_major__) && (__clang_major__ > 7)) ||                  \
+    (!defined(__clang_major__))) /* clang 7 has an internal compiler error, \
+                                    which causes clang to segfault */
+
+#define MONGOC_HAS_STDATOMIC
+
+#endif
+
 #if defined(__MINGW32__)
 
 /* MinGW only has atomic intrinsics for long type */
@@ -54,12 +64,7 @@ typedef long bson_atomic_bool;
 /* Windows atomic intrinsics don't allow a bool, so use closest type */
 typedef char bson_atomic_bool;
 
-#elif defined(__STDC__) && __STDC_VERSION__ >= 201112L &&                   \
-   !defined(__STDC_NO_ATOMICS__) &&                                         \
-   ((defined(__clang_major__) && (__clang_major__ > 7)) ||                  \
-    (!defined(__clang_major__))) /* clang 7 has an internal compiler error, \
-                                    which causes clang to segfault */
-
+#elif defined(MONGOC_HAS_STDATOMIC)
 
 #include <stdatomic.h>
 
@@ -70,6 +75,12 @@ typedef atomic_bool bson_atomic_bool;
 typedef bool bson_atomic_bool;
 
 #endif
+
+void
+bson_atomic_bool_set (bson_atomic_bool *dst, bson_atomic_bool *src);
+
+bson_atomic_bool
+bson_atomic_bool_get (bson_atomic_bool *src);
 
 
 /* When adding a new field to mongoc-config.h.in, update this! */
