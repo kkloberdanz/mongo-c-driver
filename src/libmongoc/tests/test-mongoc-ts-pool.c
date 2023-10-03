@@ -1,3 +1,5 @@
+#include <pthread.h>
+
 #include "mongoc/mongoc-ts-pool-private.h"
 
 #include "TestSuite.h"
@@ -41,6 +43,56 @@ test_ts_pool_simple (void)
    ASSERT_CMPSIZE_T (mongoc_ts_pool_size (pool), ==, 0);
 
    mongoc_ts_pool_free (pool);
+}
+
+enum {
+   NUM_THREADS = 100,
+};
+
+static void *pool_thread_func(void *data)
+{
+   fprintf(stderr, "THREAD FUNC\n");
+   return NULL;
+}
+
+static void
+test_ts_pool_lock_contention (void)
+{
+
+   pthread_t threads[NUM_THREADS];
+   for (int i = 0; i < NUM_THREADS; i++) {
+      pthread_create(&threads[i], NULL, pool_thread_func, NULL);
+   }
+
+   for (int i = 0; i < NUM_THREADS; i++) {
+      pthread_join(threads[i], NULL);
+   }
+
+   // mongoc_ts_pool *pool = mongoc_ts_pool_new (
+   //    (mongoc_ts_pool_params){.element_size = sizeof (int)});
+   // int *item;
+   // int *item2;
+
+   // item = mongoc_ts_pool_get_existing (pool);
+   // BSON_ASSERT (!item);
+
+   // item = mongoc_ts_pool_get (pool, NULL);
+   // BSON_ASSERT (item);
+   // ASSERT_CMPINT (*item, ==, 0);
+   // *item = 42;
+   // ASSERT_CMPSIZE_T (mongoc_ts_pool_size (pool), ==, 0);
+   // mongoc_ts_pool_return (pool, item);
+   // ASSERT_CMPSIZE_T (mongoc_ts_pool_size (pool), ==, 1);
+
+   // item2 = mongoc_ts_pool_get_existing (pool);
+   // BSON_ASSERT (item2);
+   // ASSERT_CMPINT (*item2, ==, 42);
+   // ASSERT_CMPSIZE_T (mongoc_ts_pool_size (pool), ==, 0);
+
+   // mongoc_ts_pool_drop (pool, item2);
+   // ASSERT_CMPSIZE_T (mongoc_ts_pool_size (pool), ==, 0);
+
+   // mongoc_ts_pool_free (pool);
 }
 
 static int
@@ -94,4 +146,5 @@ test_ts_pool_install (TestSuite *suite)
    TestSuite_Add (suite, "/Util/ts-pool-empty", test_ts_pool_empty);
    TestSuite_Add (suite, "/Util/ts-pool", test_ts_pool_simple);
    TestSuite_Add (suite, "/Util/ts-pool-special", test_ts_pool_special);
+   TestSuite_Add (suite, "/Util/ts-lock-contention", test_ts_pool_lock_contention);
 }

@@ -311,6 +311,7 @@ mongoc_ts_pool_visit_each (mongoc_ts_pool *pool,
    BSON_MAYBE_UNUSED static BSON_INLINE void PoolName##_return (               \
       PoolName p, ElementType *elem)                                           \
    {                                                                           \
+      fprintf(stderr, "calling: mongoc_ts_pool_return from '%s'\n", __FUNCTION__); \
       mongoc_ts_pool_return (p.pool, elem);                                    \
    }                                                                           \
                                                                                \
