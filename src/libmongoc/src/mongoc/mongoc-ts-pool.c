@@ -304,8 +304,6 @@ mongoc_ts_pool_return (mongoc_ts_pool *pool, void *item)
 {
    pool_node *node = _pool_node_from_item (item, pool);
 
-   fprintf(stderr, "CALLING: '%s'\n", __FUNCTION__);
-
    BSON_ASSERT (pool == node->owner_pool);
 
    if (_should_prune (node)) {
