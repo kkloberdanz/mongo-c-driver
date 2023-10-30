@@ -1,6 +1,8 @@
 #include <pthread.h>
 #include <time.h>
 #include <stdlib.h>
+#include <stdatomic.h>
+#include <sched.h>
 
 #include "mongoc/mongoc-ts-pool-private.h"
 
@@ -48,16 +50,23 @@ test_ts_pool_simple (void)
 }
 
 enum {
-   NUM_THREADS = 30000,
+   NUM_THREADS = 10000,
 };
+
+atomic_int count = 0;
 
 mongoc_ts_pool *pool = NULL;
 
 static void *pool_thread_func(void *data)
 {
+   count++;
    int *item = mongoc_ts_pool_get (pool, NULL);
    BSON_ASSERT (item);
    *item = rand();
+
+   while (count < NUM_THREADS) {
+      sched_yield();
+   }
    mongoc_ts_pool_return (pool, item);
    return NULL;
 }

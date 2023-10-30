@@ -309,9 +309,9 @@ mongoc_ts_pool_return (mongoc_ts_pool *pool, void *item)
    pthread_t tid = pthread_self();
    struct timespec ts;
 
-   clock_gettime(CLOCK_REALTIME, &ts);
-   int64_t begin = (int64_t)(ts.tv_sec) * (int64_t)1000000000 + (int64_t)(ts.tv_nsec);
-   printf("tid: %ld begin acquire lock at %lld\n", tid, begin);
+   // clock_gettime(CLOCK_REALTIME, &ts);
+   // int64_t begin = (int64_t)(ts.tv_sec) * (int64_t)1000000000 + (int64_t)(ts.tv_nsec);
+   // printf("tid: %ld begin acquire lock at %lld\n", tid, begin);
 
    pool_node *node = _pool_node_from_item (item, pool);
    BSON_ASSERT (pool == node->owner_pool);
@@ -334,9 +334,9 @@ mongoc_ts_pool_return (mongoc_ts_pool *pool, void *item)
       }
    }
 
-   clock_gettime(CLOCK_REALTIME, &ts);
-   int64_t end = (int64_t)(ts.tv_sec) * (int64_t)1000000000 + (int64_t)(ts.tv_nsec);
-   printf("tid: %ld end   acquire lock at %lld\n", tid, end);
+   // clock_gettime(CLOCK_REALTIME, &ts);
+   // int64_t end = (int64_t)(ts.tv_sec) * (int64_t)1000000000 + (int64_t)(ts.tv_nsec);
+   // printf("tid: %ld end   acquire lock at %lld\n", tid, end);
 }
 
 void
