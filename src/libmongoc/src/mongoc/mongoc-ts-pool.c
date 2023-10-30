@@ -1,3 +1,7 @@
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/syscall.h>
+
 #include "mongoc-ts-pool-private.h"
 #include "common-thread-private.h"
 
@@ -302,14 +306,23 @@ retry:
 void
 mongoc_ts_pool_return (mongoc_ts_pool *pool, void *item)
 {
-   pool_node *node = _pool_node_from_item (item, pool);
+   pthread_t tid = pthread_self();
+   struct timespec ts;
 
+   clock_gettime(CLOCK_REALTIME, &ts);
+   int64_t begin = (int64_t)(ts.tv_sec) * (int64_t)1000000000 + (int64_t)(ts.tv_nsec);
+   printf("tid: %ld begin acquire lock at %lld\n", tid, begin);
+
+   pool_node *node = _pool_node_from_item (item, pool);
    BSON_ASSERT (pool == node->owner_pool);
 
    if (_should_prune (node)) {
       mongoc_ts_pool_drop (pool, item);
    } else {
+
       bson_mutex_lock (&pool->mtx);
+
+
       node->next = pool->head;
       pool->head = node;
       bson_mutex_unlock (&pool->mtx);
@@ -320,6 +333,10 @@ mongoc_ts_pool_return (mongoc_ts_pool *pool, void *item)
             &node->owner_pool->outstanding_items, 1, bson_memory_order_relaxed);
       }
    }
+
+   clock_gettime(CLOCK_REALTIME, &ts);
+   int64_t end = (int64_t)(ts.tv_sec) * (int64_t)1000000000 + (int64_t)(ts.tv_nsec);
+   printf("tid: %ld end   acquire lock at %lld\n", tid, end);
 }
 
 void

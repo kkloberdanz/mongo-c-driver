@@ -48,7 +48,7 @@ test_ts_pool_simple (void)
 }
 
 enum {
-   NUM_THREADS = 1000,
+   NUM_THREADS = 30000,
 };
 
 mongoc_ts_pool *pool = NULL;
@@ -65,6 +65,7 @@ static void *pool_thread_func(void *data)
 static void
 test_ts_pool_lock_contention (void)
 {
+   printf("begin: %ld\n", time(NULL));
    srand(time(NULL));
    pool = mongoc_ts_pool_new ((mongoc_ts_pool_params){.element_size = sizeof (int)});
 
@@ -83,11 +84,11 @@ test_ts_pool_lock_contention (void)
       if (!item) {
          break;
       }
-      printf("%d\n", *item);
       mongoc_ts_pool_drop (pool, item);
    }
 
    mongoc_ts_pool_free (pool);
+   printf("end: %ld\n", time(NULL));
 }
 
 static int
