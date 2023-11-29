@@ -5,7 +5,13 @@
     {
       "minServerVersion": "4.0",
       "topologies": [
-        "replicaset",
+        "single",
+        "replicaset"
+      ]
+    },
+    {
+      "minServerVersion": "4.1.7",
+      "topologies": [
         "sharded",
         "load-balanced"
       ]
