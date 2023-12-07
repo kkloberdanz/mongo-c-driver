@@ -242,6 +242,7 @@ _make_cursor (mongoc_change_stream_t *stream)
    bson_iter_t iter;
    mongoc_server_stream_t *server_stream;
 
+retry:
    BSON_ASSERT (stream);
    BSON_ASSERT (!stream->cursor);
    bson_init (&command);
@@ -316,9 +317,15 @@ _make_cursor (mongoc_change_stream_t *stream)
                                               &command_opts,
                                               &reply,
                                               &stream->err)) {
+      bool has_retry_label = mongoc_error_has_label (&reply, "ResumableChangeStreamError");
+
       bson_destroy (&stream->err_doc);
       bson_copy_to (&reply, &stream->err_doc);
       bson_destroy (&reply);
+
+      if (has_retry_label) {
+         goto retry;
+      }
       goto cleanup;
    }
 
