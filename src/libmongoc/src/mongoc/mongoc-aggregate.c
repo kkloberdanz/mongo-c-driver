@@ -44,6 +44,8 @@ _has_write_key (bson_iter_t *iter)
    bson_iter_t stage;
    bson_iter_t next;
 
+   fprintf(stderr, "\n\n\n>>>> %s\n\n\n", __FUNCTION__);
+
    memcpy (&next, iter, sizeof (bson_iter_t));
    if (!bson_iter_next (&next)) {
       /* default to false when iter is emtpy */
@@ -93,6 +95,8 @@ _make_agg_cmd (const char *ns,
                bson_t *command,
                bson_error_t *err)
 {
+   fprintf(stderr, "\n\n\n>>>> %s\n\n\n", __FUNCTION__);
+
    const char *const dot = strstr (ns, ".");
    const char *error = NULL;
    const char *error_hint = NULL;
@@ -236,7 +240,15 @@ _mongoc_aggregate (mongoc_client_t *client,
    bson_error_t opts_err = {0};
    bool parsed_opts;
 
+   fprintf(stderr, "\n\n\n>>>> %s\n\n\n", __FUNCTION__);
+
    ENTRY;
+
+   char *pip = bson_as_json(pipeline, NULL);
+   char *opt = bson_as_json(opts, NULL);
+   fprintf(stderr, "\n\n\nAGGREGATE => pipeline: '%s' opts: '%s'\n\n\n", pip, opt);
+   free(pip);
+   free(opt);
 
    BSON_ASSERT (client);
    BSON_ASSERT (ns);

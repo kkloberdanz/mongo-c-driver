@@ -183,6 +183,11 @@ _mongoc_read_error_get_type (bool cmd_ret,
       return MONGOC_READ_ERR_NONE;
    }
 
+   if (mongoc_error_has_label (reply, "ResumableChangeStreamError")) {
+      fprintf(stderr, "IT'S RESUMABLE!");
+      return MONGOC_READ_ERR_RETRY;
+   }
+
    switch (error.code) {
    case MONGOC_SERVER_ERR_EXCEEDEDTIMELIMIT:
    case MONGOC_SERVER_ERR_INTERRUPTEDATSHUTDOWN:

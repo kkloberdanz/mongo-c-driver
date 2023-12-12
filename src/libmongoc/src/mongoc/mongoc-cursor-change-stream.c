@@ -52,6 +52,7 @@ _update_post_batch_resume_token (mongoc_cursor_t *cursor)
 static mongoc_cursor_state_t
 _prime (mongoc_cursor_t *cursor)
 {
+   fprintf(stderr, "PRIME\n");
    BSON_UNUSED (cursor);
 
    fprintf (stderr, "Prime unsupported on change stream cursor.");
@@ -64,6 +65,7 @@ _prime (mongoc_cursor_t *cursor)
 static mongoc_cursor_state_t
 _pop_from_batch (mongoc_cursor_t *cursor)
 {
+   fprintf(stderr, "POP FROM BATCH\n");
    _data_change_stream_t *data = (_data_change_stream_t *) cursor->impl.data;
    _mongoc_cursor_response_read (cursor, &data->response, &cursor->current);
    if (cursor->current) {
@@ -77,6 +79,7 @@ _pop_from_batch (mongoc_cursor_t *cursor)
 mongoc_cursor_state_t
 _get_next_batch (mongoc_cursor_t *cursor)
 {
+   fprintf(stderr, "GET NEXT BATCH\n");
    _data_change_stream_t *data = (_data_change_stream_t *) cursor->impl.data;
    bson_t getmore_cmd;
 

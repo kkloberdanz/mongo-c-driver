@@ -110,6 +110,8 @@ _make_command (mongoc_change_stream_t *stream, bson_t *command)
    bson_array_builder_t *pipeline;
    bson_t cursor_doc;
 
+   fprintf(stderr, "\n\n\n>>>> %s\n\n\n", __FUNCTION__);
+
    if (stream->change_stream_type == MONGOC_CHANGE_STREAM_COLLECTION) {
       bson_append_utf8 (
          command, "aggregate", 9, stream->coll, (int) strlen (stream->coll));
@@ -242,6 +244,8 @@ _make_cursor (mongoc_change_stream_t *stream)
    bson_iter_t iter;
    mongoc_server_stream_t *server_stream;
 
+   fprintf(stderr, "\n\n\n>>>> %s\n\n\n", __FUNCTION__);
+
 retry:
    BSON_ASSERT (stream);
    BSON_ASSERT (!stream->cursor);
@@ -324,7 +328,7 @@ retry:
       bson_destroy (&reply);
 
       if (has_retry_label) {
-         goto retry;
+         // goto retry;
       }
       goto cleanup;
    }
@@ -568,6 +572,7 @@ mongoc_change_stream_next (mongoc_change_stream_t *stream, const bson_t **bson)
          stream->resumed = true;
          if (!_make_cursor (stream)) {
             goto end;
+            // continue;
          }
          if (mongoc_cursor_next (stream->cursor, bson)) {
             break;

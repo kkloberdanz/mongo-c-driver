@@ -949,6 +949,10 @@ _mongoc_cursor_run_command (mongoc_cursor_t *cursor,
 
    ENTRY;
 
+   char *json = bson_as_json(command, NULL);
+   fprintf(stderr, "COMMAND: '%s'\n", json);
+   free(json);
+
    mongoc_cmd_parts_init (
       &parts, cursor->client, db, MONGOC_QUERY_NONE, command);
    parts.is_read_command = true;
@@ -1044,6 +1048,7 @@ _mongoc_cursor_run_command (mongoc_cursor_t *cursor,
     * $readPreference.
     */
    cmd_name = _mongoc_get_command_name (command);
+   fprintf(stderr, "COMMAND NAME: '%s'\n", cmd_name);
    is_primary =
       !cursor->read_prefs || cursor->read_prefs->mode == MONGOC_READ_PRIMARY;
 
