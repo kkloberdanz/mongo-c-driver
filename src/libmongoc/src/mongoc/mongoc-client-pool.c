@@ -413,10 +413,10 @@ mongoc_client_pool_warmup (mongoc_client_pool_t *pool, size_t num_to_warmup)
    BSON_ASSERT (pool);
 
    for (size_t i = 0; i < num_to_warmup; i++) {
-      bson_mutex_lock (&pool->mutex);
+//      bson_mutex_lock (&pool->mutex);
       size_t size = pool->size;
       size_t max_pool_size = pool->max_pool_size;
-      bson_mutex_unlock (&pool->mutex);
+//      bson_mutex_unlock (&pool->mutex);
 
       if ((size >= max_pool_size) || (size >= num_to_warmup)) {
          goto done;
