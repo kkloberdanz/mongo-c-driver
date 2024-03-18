@@ -1293,6 +1293,24 @@ _mongoc_cluster_auth_node_x509 (mongoc_cluster_t *cluster,
 #endif
 }
 
+/*
+ * Step 1: Get JWT token
+ */
+static bool
+_mongoc_cluster_auth_node_oidc (mongoc_cluster_t *cluster,
+                                mongoc_stream_t *stream,
+                                mongoc_server_description_t *sd,
+                                bson_error_t *error)
+{
+   bool ret = true;
+   char *properties = _uri_get_key(cluster->uri, "authmechanismproperties");
+
+   BSON_ASSERT (cluster);
+   BSON_ASSERT (stream);
+
+   return ret;
+}
+
 bool
 mongoc_cluster_uses_server_api (const mongoc_cluster_t *cluster)
 {
@@ -1792,6 +1810,8 @@ _mongoc_cluster_auth_node (mongoc_cluster_t *cluster,
       ret = _mongoc_cluster_auth_node_plain (cluster, stream, sd, error);
    } else if (0 == strcasecmp (mechanism, "MONGODB-AWS")) {
       ret = _mongoc_cluster_auth_node_aws (cluster, stream, sd, error);
+   } else if (0 == strcasecmp (mechanism, "MONGODB-OIDC")) {
+      ret = _mongoc_cluster_auth_node_oidc (cluster, stream, sd, error);
    } else {
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
