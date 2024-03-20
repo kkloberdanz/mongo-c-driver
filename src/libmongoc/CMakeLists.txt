@@ -549,6 +549,7 @@ set (SOURCES ${SOURCES}
    ${PROJECT_SOURCE_DIR}/src/mongoc/mongoc-client-side-encryption.c
    ${PROJECT_SOURCE_DIR}/src/mongoc/mongoc-cluster.c
    ${PROJECT_SOURCE_DIR}/src/mongoc/mongoc-cluster-aws.c
+   ${PROJECT_SOURCE_DIR}/src/mongoc/mongoc-cluster-oidc.c
    ${PROJECT_SOURCE_DIR}/src/mongoc/mongoc-cluster-sasl.c
    ${PROJECT_SOURCE_DIR}/src/mongoc/mongoc-collection.c
    ${PROJECT_SOURCE_DIR}/src/mongoc/mongoc-compression.c
