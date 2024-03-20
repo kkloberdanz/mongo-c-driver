@@ -32,6 +32,7 @@
 #include "mongoc-macros.h"
 #include "mongoc-read-prefs.h"
 #include "mongoc-server-api.h"
+#include "mongoc-oidc-callback.h"
 #ifdef MONGOC_ENABLE_SSL
 #include "mongoc-ssl.h"
 #endif
