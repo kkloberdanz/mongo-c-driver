@@ -218,6 +218,8 @@ struct _mongoc_topology_t {
    mongoc_usleep_func_t usleep_fn;
    void *usleep_data;
 
+   bson_mutex_t oidc_mtx;
+
    /* Spec:
     * https://github.com/mongodb/specifications/blob/master/source/auth/auth.md#oidc-callback
     */
