@@ -132,7 +132,7 @@ connect_with_oidc (void)
       goto done;
    }
 
-   mongoc_client_set_oidc_callback (client, _oidc_callback);
+//   mongoc_client_set_oidc_callback (client, _oidc_callback);
 
    ok = _run_ping (db);
    if (!ok) {
