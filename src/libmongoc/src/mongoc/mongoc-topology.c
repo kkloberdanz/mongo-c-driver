@@ -387,6 +387,8 @@ mongoc_topology_new (const mongoc_uri_t *uri, bool single_threaded)
    topology->session_pool = mongoc_server_session_pool_new_with_params (
       _server_session_init, _server_session_destroy, _server_session_should_prune, topology);
 
+   bson_mutex_init (&topology->oidc_mtx);
+
    topology->valid = false;
 
    const int32_t heartbeat_default = single_threaded ? MONGOC_TOPOLOGY_HEARTBEAT_FREQUENCY_MS_SINGLE_THREADED
@@ -584,7 +586,6 @@ mongoc_topology_new (const mongoc_uri_t *uri, bool single_threaded)
       topology->rtt_monitors = mongoc_set_new (1, NULL, NULL);
       bson_mutex_init (&topology->apm_mutex);
       bson_mutex_init (&topology->srv_polling_mtx);
-      bson_mutex_init (&topology->oidc_mtx);
       mongoc_cond_init (&topology->srv_polling_cond);
    }
 
@@ -644,10 +645,10 @@ static void
 _mongoc_oidc_credential_destroy (mongoc_oidc_credential_t *cred)
 {
    if (cred->access_token) {
-      bson_zero_free (cred->access_token, strlen(cred->access_token));
+      bson_zero_free (cred->access_token, strlen (cred->access_token));
       cred->access_token = NULL;
    }
-   free(cred);
+   free (cred);
 }
 
 
