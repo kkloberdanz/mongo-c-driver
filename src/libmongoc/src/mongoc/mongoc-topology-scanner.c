@@ -156,8 +156,24 @@ _mongoc_topology_scanner_get_speculative_auth_mechanism (const mongoc_uri_t *uri
    return mechanism;
 }
 
+static void
+_mongoc_oidc_add_speculative_auth(bson_t *auth_cmd, mongoc_topology_t *topology)
+{
+   bson_mutex_lock (&topology->oidc_mtx);
+   const char *access_token = topology->oidc_credential->access_token;
+   if (access_token) {
+      bson_append_utf8 (auth_cmd,
+                        "jwt",
+                        -1,
+                        access_token,
+                        -1);
+   }
+   bson_mutex_unlock (&topology->oidc_mtx);
+}
+
 void
-_mongoc_topology_scanner_add_speculative_authentication (bson_t *cmd,
+_mongoc_topology_scanner_add_speculative_authentication (mongoc_topology_t *topology,
+                                                         bson_t *cmd,
                                                          const mongoc_uri_t *uri,
                                                          const mongoc_ssl_opt_t *ssl_opts,
                                                          mongoc_scram_t *scram /* OUT */)
@@ -168,6 +184,7 @@ _mongoc_topology_scanner_add_speculative_authentication (bson_t *cmd,
    const char *mechanism = _mongoc_topology_scanner_get_speculative_auth_mechanism (uri);
 
    fprintf (stderr, "BEGIN SPECULATIVE AUTH\n");
+
    if (!mechanism) {
       return;
    }
@@ -182,8 +199,9 @@ _mongoc_topology_scanner_add_speculative_authentication (bson_t *cmd,
       }
    }
 
-   if (strcasecmp (mechanism, "MONGODB-OIDC") == 0) {
+   if (topology && strcasecmp (mechanism, "MONGODB-OIDC") == 0) {
       fprintf (stderr, "SPECULATIVE AUTH: MONGODB-OIDC\n");
+      _mongoc_oidc_add_speculative_auth (&auth_cmd, topology);
       /* TODO:
        * Add {"jwt": access_token} to hello command
        */
@@ -345,7 +363,7 @@ after_init:
 }
 
 static void
-_begin_hello_cmd (const mongoc_topology_t *topology,
+_begin_hello_cmd (mongoc_topology_t *topology,
                   mongoc_topology_scanner_node_t *node,
                   mongoc_stream_t *stream,
                   bool is_setup_done,
@@ -381,7 +399,7 @@ _begin_hello_cmd (const mongoc_topology_t *topology,
       ssl_opts = ts->ssl_opts;
 #endif
 
-      _mongoc_topology_scanner_add_speculative_authentication (&cmd, ts->uri, ssl_opts, &node->scram);
+      _mongoc_topology_scanner_add_speculative_authentication (topology, &cmd, ts->uri, ssl_opts, &node->scram);
    }
 
    if (!bson_empty (&ts->cluster_time)) {
@@ -507,7 +525,7 @@ mongoc_topology_scanner_add (mongoc_topology_scanner_t *ts, const mongoc_host_li
 }
 
 void
-mongoc_topology_scanner_scan (const mongoc_topology_t *topology, uint32_t id)
+mongoc_topology_scanner_scan (mongoc_topology_t *topology, uint32_t id)
 {
    mongoc_topology_scanner_node_t *node;
    const mongoc_topology_scanner_t *ts = topology->scanner;
@@ -840,7 +858,7 @@ _mongoc_topology_scanner_tcp_initiate (mongoc_async_cmd_t *acmd)
  */
 
 bool
-mongoc_topology_scanner_node_setup_tcp (const mongoc_topology_t *topology, mongoc_topology_scanner_node_t *node, bson_error_t *error)
+mongoc_topology_scanner_node_setup_tcp (mongoc_topology_t *topology, mongoc_topology_scanner_node_t *node, bson_error_t *error)
 {
    struct addrinfo hints;
    struct addrinfo *iter;
@@ -904,7 +922,7 @@ mongoc_topology_scanner_node_setup_tcp (const mongoc_topology_t *topology, mongo
 }
 
 bool
-mongoc_topology_scanner_node_connect_unix (const mongoc_topology_t *topology, mongoc_topology_scanner_node_t *node, bson_error_t *error)
+mongoc_topology_scanner_node_connect_unix (mongoc_topology_t *topology, mongoc_topology_scanner_node_t *node, bson_error_t *error)
 {
 #ifdef _WIN32
    ENTRY;
@@ -973,7 +991,7 @@ mongoc_topology_scanner_node_connect_unix (const mongoc_topology_t *topology, mo
  */
 
 void
-mongoc_topology_scanner_node_setup (const mongoc_topology_t *topology,
+mongoc_topology_scanner_node_setup (mongoc_topology_t *topology,
                                     mongoc_topology_scanner_node_t *node,
                                     bson_error_t *error)
 {

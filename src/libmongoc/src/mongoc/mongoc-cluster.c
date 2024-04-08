@@ -779,7 +779,7 @@ _stream_run_hello (mongoc_cluster_t *cluster,
       ssl_opts = &cluster->client->ssl_opts;
 #endif
 
-      _mongoc_topology_scanner_add_speculative_authentication (&handshake_command, cluster->uri, ssl_opts, scram);
+      _mongoc_topology_scanner_add_speculative_authentication (NULL, &handshake_command, cluster->uri, ssl_opts, scram); // TODO: pass 'topology' object as first argument.
    }
 
    if (negotiate_sasl_supported_mechs) {
