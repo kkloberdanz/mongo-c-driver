@@ -345,7 +345,8 @@ after_init:
 }
 
 static void
-_begin_hello_cmd (mongoc_topology_scanner_node_t *node,
+_begin_hello_cmd (const mongoc_topology_t *topology,
+                  mongoc_topology_scanner_node_t *node,
                   mongoc_stream_t *stream,
                   bool is_setup_done,
                   struct addrinfo *dns_result,
@@ -839,7 +840,7 @@ _mongoc_topology_scanner_tcp_initiate (mongoc_async_cmd_t *acmd)
  */
 
 bool
-mongoc_topology_scanner_node_setup_tcp (mongoc_topology_scanner_node_t *node, bson_error_t *error)
+mongoc_topology_scanner_node_setup_tcp (const mongoc_topology_t *topology, mongoc_topology_scanner_node_t *node, bson_error_t *error)
 {
    struct addrinfo hints;
    struct addrinfo *iter;
@@ -883,7 +884,8 @@ mongoc_topology_scanner_node_setup_tcp (mongoc_topology_scanner_node_t *node, bs
    }
 
    if (node->successful_dns_result) {
-      _begin_hello_cmd (node,
+      _begin_hello_cmd (topology,
+                        node,
                         NULL /* stream */,
                         false /* is_setup_done */,
                         node->successful_dns_result,
@@ -892,7 +894,7 @@ mongoc_topology_scanner_node_setup_tcp (mongoc_topology_scanner_node_t *node, bs
    } else {
       LL_FOREACH2 (node->dns_results, iter, ai_next)
       {
-         _begin_hello_cmd (node, NULL /* stream */, false /* is_setup_done */, iter, delay, true /* use_handshake */);
+         _begin_hello_cmd (topology, node, NULL /* stream */, false /* is_setup_done */, iter, delay, true /* use_handshake */);
          /* each subsequent DNS result will have an additional 250ms delay. */
          delay += HAPPY_EYEBALLS_DELAY_MS;
       }
@@ -902,7 +904,7 @@ mongoc_topology_scanner_node_setup_tcp (mongoc_topology_scanner_node_t *node, bs
 }
 
 bool
-mongoc_topology_scanner_node_connect_unix (mongoc_topology_scanner_node_t *node, bson_error_t *error)
+mongoc_topology_scanner_node_connect_unix (const mongoc_topology_t *topology, mongoc_topology_scanner_node_t *node, bson_error_t *error)
 {
 #ifdef _WIN32
    ENTRY;
@@ -948,7 +950,7 @@ mongoc_topology_scanner_node_connect_unix (mongoc_topology_scanner_node_t *node,
    stream = _mongoc_topology_scanner_node_setup_stream_for_tls (node, mongoc_stream_socket_new (sock));
    if (stream) {
       _begin_hello_cmd (
-         node, stream, false /* is_setup_done */, NULL /* dns result */, 0 /* delay */, true /* use_handshake */);
+         topology, node, stream, false /* is_setup_done */, NULL /* dns result */, 0 /* delay */, true /* use_handshake */);
       RETURN (true);
    }
    bson_set_error (error, MONGOC_ERROR_STREAM, MONGOC_ERROR_STREAM_CONNECT, "Failed to create TLS stream");
@@ -984,7 +986,8 @@ mongoc_topology_scanner_node_setup (const mongoc_topology_t *topology,
 
    /* if there is already a working stream, push it back to be re-scanned. */
    if (node->stream) {
-      _begin_hello_cmd (node,
+      _begin_hello_cmd (topology,
+                        node,
                         node->stream,
                         true /* is_setup_done */,
                         NULL /* dns_result */,
@@ -1013,7 +1016,8 @@ mongoc_topology_scanner_node_setup (const mongoc_topology_t *topology,
       stream = node->ts->initiator (node->ts->uri, &node->host, node->ts->initiator_context, error);
       if (stream) {
          success = true;
-         _begin_hello_cmd (node,
+         _begin_hello_cmd (topology,
+                           node,
                            stream,
                            false /* is_setup_done */,
                            NULL /* dns_result */,
@@ -1022,9 +1026,9 @@ mongoc_topology_scanner_node_setup (const mongoc_topology_t *topology,
       }
    } else {
       if (node->host.family == AF_UNIX) {
-         success = mongoc_topology_scanner_node_connect_unix (node, error);
+         success = mongoc_topology_scanner_node_connect_unix (topology, node, error);
       } else {
-         success = mongoc_topology_scanner_node_setup_tcp (node, error);
+         success = mongoc_topology_scanner_node_setup_tcp (topology, node, error);
       }
    }
 
