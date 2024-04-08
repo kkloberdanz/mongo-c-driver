@@ -344,6 +344,17 @@ _detect_nongenuine_hosts (const mongoc_uri_t *uri)
    }
 }
 
+static mongoc_oidc_credential_t *
+_mongoc_oidc_credential_new (char *access_token, int64_t expires_in_seconds)
+{
+   mongoc_oidc_credential_t *cred = bson_malloc (sizeof (*cred));
+
+   cred->access_token = access_token;
+   cred->expires_in_seconds = expires_in_seconds;
+
+   return cred;
+}
+
 /*
  *-------------------------------------------------------------------------
  *
@@ -388,6 +399,9 @@ mongoc_topology_new (const mongoc_uri_t *uri, bool single_threaded)
       _server_session_init, _server_session_destroy, _server_session_should_prune, topology);
 
    bson_mutex_init (&topology->oidc_mtx);
+
+   topology->oidc_callback = NULL;
+   topology->oidc_credential = _mongoc_oidc_credential_new (NULL, 0);
 
    topology->valid = false;
 
