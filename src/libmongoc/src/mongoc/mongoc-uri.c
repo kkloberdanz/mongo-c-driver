@@ -1291,10 +1291,11 @@ mongoc_uri_finalize_auth (mongoc_uri_t *uri, bson_error_t *error)
             bson_append_utf8 (&uri->credentials, MONGOC_URI_AUTHSOURCE, -1, "$external", -1);
          }
       }
-      /* MONGODB-X509 and MONGODB-AWS are the only mechanisms that don't require
+      /* MONGODB-X509, MONGODB-AWS, and MONGODB-OIDC are the only mechanisms that don't require
        * username */
       if (!(strcasecmp (mongoc_uri_get_auth_mechanism (uri), "MONGODB-X509") == 0 ||
-            strcasecmp (mongoc_uri_get_auth_mechanism (uri), "MONGODB-AWS") == 0)) {
+            strcasecmp (mongoc_uri_get_auth_mechanism (uri), "MONGODB-AWS") == 0 ||
+            strcasecmp (mongoc_uri_get_auth_mechanism (uri), "MONGODB-OIDC") == 0)) {
          if (!mongoc_uri_get_username (uri) || strcmp (mongoc_uri_get_username (uri), "") == 0) {
             MONGOC_URI_ERROR (
                error, "'%s' authentication mechanism requires username", mongoc_uri_get_auth_mechanism (uri));
