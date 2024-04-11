@@ -573,7 +573,8 @@ check_schema_version (test_file_t *test_file)
 {
    const char *supported_version_strs[] = {"1.8",  /* fully supported through this version */
                                            "1.12", /* partially supported (expectedError.errorResponse assertions) */
-                                           "1.18" /* partially supported (additional properties in kmsProviders) */};
+                                           "1.18", /* partially supported (additional properties in kmsProviders) */
+                                           "1.19"};
    int i;
 
    for (i = 0; i < sizeof (supported_version_strs) / sizeof (supported_version_strs[0]); i++) {
@@ -712,6 +713,19 @@ check_run_on_requirement (test_runner_t *test_runner,
 
          *fail_reason = bson_strdup_printf ("Server does not match auth requirement, test %s authentication.",
                                             auth_requirement ? "requires" : "forbids");
+
+         return false;
+      }
+
+      if (0 == strcmp (key, "authMechanism")) {
+         const char *mechanism = bson_iter_utf8 (&req_iter, NULL);
+         if (strcasecmp (mechanism, "MONGODB-OIDC") != 0) {
+            test_error ("Unexpected authMechanism value: %s", mechanism);
+         }
+
+         if (test_framework_has_auth ()) {
+            continue;
+         }
 
          return false;
       }
@@ -1645,8 +1659,8 @@ run_one_test_file (bson_t *bson)
    test_runner = test_runner_new ();
    test_file = test_file_new (test_runner, bson);
 
-   test_diagnostics_test_info ("test file: %s", test_file->description);
-   fprintf(stderr, "test file: %s", test_file->description);
+   test_diagnostics_test_info ("test file: %s\n", test_file->description);
+   fprintf(stderr, "test file: %s\n", test_file->description);
 
    if (is_test_file_skipped (test_file)) {
       MONGOC_DEBUG ("SKIPPING test file '%s'. Reason: 'explicitly skipped in runner.c'", test_file->description);
@@ -1670,8 +1684,8 @@ run_one_test_file (bson_t *bson)
       bson_error_t error = {0};
 
       test_diagnostics_reset ();
-      test_diagnostics_test_info ("test file: %s", test_file->description);
-      fprintf(stderr, "test file: %s", test_file->description);
+      test_diagnostics_test_info ("test file: %s\n", test_file->description);
+      fprintf(stderr, "test file: %s\n", test_file->description);
 
       bson_iter_bson (&test_iter, &test_bson);
       test = test_new (test_file, &test_bson);
