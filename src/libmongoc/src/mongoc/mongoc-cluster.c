@@ -122,11 +122,6 @@ _handle_network_error (mongoc_cluster_t *cluster, mongoc_server_stream_t *server
 
    ENTRY;
 
-   if (_mongoc_error_is_reauthentication_required (why)) {
-      fprintf (stderr, "\n\n\n\nREAUTH ERROR\n\n\n\n");
-      exit(23);
-   }
-
    server_id = server_stream->sd->id;
    type = MONGOC_SDAM_APP_ERROR_NETWORK;
    if (mongoc_stream_timed_out (server_stream->stream)) {
@@ -632,9 +627,14 @@ fail_no_events:
 
    _mongoc_topology_update_last_used (cluster->client->topology, server_id);
 
-   if (error->code == MONGOC_SERVER_ERR_REAUTHENTICATION_REQUIRED) {
-      fprintf(stderr, "REAUTHENTICATION REQUIRED: %s\n", error->message ? error->message : "<NO MESSAGE>");
-      exit(43);
+   if (_mongoc_error_is_reauthentication_required (error)) {
+      fprintf (stderr, "\n\n\n\nWILL REAUTHENTICATE\n\n\n\n");
+      bool ok = _mongoc_cluster_oidc_reauthenticate (cluster, server_stream->stream, server_stream->sd, error);
+      if (!ok) {
+         fprintf (stderr, "\n\n\n\nERROR WHILE REAUTHENTICATING\n\n\n\n");
+         exit(7);
+      }
+      fprintf (stderr, "\n\n\n\nDONE REAUTHENTICATE\n\n\n\n");
    }
    return retval;
 }
@@ -698,11 +698,6 @@ mongoc_cluster_run_command_private (mongoc_cluster_t *cluster, mongoc_cmd_t *cmd
    }
 
    _mongoc_topology_update_last_used (cluster->client->topology, server_stream->sd->id);
-
-   if (error->code == MONGOC_SERVER_ERR_REAUTHENTICATION_REQUIRED) {
-      fprintf(stderr, "REAUTH REQUIRED\n");
-      exit(5);
-   }
    return retval;
 }
 
@@ -2770,13 +2765,6 @@ mongoc_cluster_stream_for_reads (mongoc_cluster_t *cluster,
 
    mongoc_server_stream_t *stream = _mongoc_cluster_stream_for_optype (
       cluster, MONGOC_SS_READ, prefs_override, cs, is_retryable, ds, reply, error);
-   if (error->code != 0) {
-      fprintf(stderr, "GOT ERROR CODE: %d: %s\n", error->code, error->message);
-   }
-   if (error->code == MONGOC_SERVER_ERR_REAUTHENTICATION_REQUIRED) {
-      fprintf(stderr, "REAUTH GOT ERROR CODE: %s\n", error->message);
-      exit(123);
-   }
    return stream;
 }
 
