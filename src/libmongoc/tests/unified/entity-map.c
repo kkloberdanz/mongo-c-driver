@@ -467,6 +467,7 @@ command_failed (const mongoc_apm_command_failed_t *failed)
       .serialize = (apm_func_serialize_t) store_event_serialize_failed,
    };
 
+   printf ("command failed: %s\n", tmp_json (mongoc_apm_command_failed_get_reply (failed)));
    apm_command_callback (funcs, "commandFailedEvent", failed);
 }
 
@@ -802,8 +803,7 @@ entity_client_new (entity_map_t *em, bson_t *bson, bson_error_t *error)
 
    /* TODO: If authMechanism is MONGODB-OIDC, then set OIDC callback */
    const char *auth_mechanism = mongoc_uri_get_auth_mechanism (uri);
-   BSON_ASSERT (auth_mechanism);
-   if (!bson_strcasecmp (auth_mechanism, "MONGODB-OIDC")) {
+   if (auth_mechanism && !bson_strcasecmp (auth_mechanism, "MONGODB-OIDC")) {
       mongoc_client_set_oidc_callback (client, _oidc_callback);
    }
 

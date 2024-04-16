@@ -2027,6 +2027,10 @@ done:
    mongoc_cmd_parts_cleanup (&parts);
    _mongoc_read_write_opts_cleanup (&read_write_opts);
 
+   if (error->code == MONGOC_SERVER_ERR_REAUTHENTICATION_REQUIRED) {
+      fprintf(stderr, "REAUTH\n");
+      exit(6);
+   }
    RETURN (ret);
 }
 
