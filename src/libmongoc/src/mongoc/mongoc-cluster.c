@@ -638,7 +638,6 @@ fail_no_events:
          first_time = false;
          goto again;
       }
-      retval = false;
    }
    return retval;
 }
