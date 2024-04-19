@@ -789,6 +789,7 @@ _stream_run_hello (mongoc_cluster_t *cluster,
 
    _mongoc_topology_dup_handshake_cmd (cluster->client->topology, &handshake_command);
 
+   fprintf (stderr, "\n\n\n\n\n\n\n\n\n\n\n>>>>RUN HELLO\n");
    if (cluster->requires_auth && speculative_auth_response) {
 #ifdef MONGOC_ENABLE_SSL
       ssl_opts = &cluster->client->ssl_opts;
@@ -1813,6 +1814,7 @@ _mongoc_cluster_auth_node (mongoc_cluster_t *cluster,
    } else if (0 == strcasecmp (mechanism, "MONGODB-AWS")) {
       ret = _mongoc_cluster_auth_node_aws (cluster, stream, sd, error);
    } else if (0 == strcasecmp (mechanism, "MONGODB-OIDC")) {
+      fprintf (stderr, "CALLING _mongoc_cluster_auth_node_oidc from cluster auth node\n");
       ret = _mongoc_cluster_auth_node_oidc (cluster, stream, sd, error);
    } else {
       bson_set_error (error,
