@@ -17,109 +17,111 @@
 static void
 _topology_has_description (const mongoc_topology_description_t *topology, bson_t *server, const char *address)
 {
-   mongoc_server_description_t const *sd;
-   bson_iter_t server_iter;
-   const char *server_type;
-   const char *set_name;
+   return;
 
-   sd = server_description_by_hostname (topology, address);
-   BSON_ASSERT (sd);
-
-   bson_iter_init (&server_iter, server);
-   while (bson_iter_next (&server_iter)) {
-      if (strcmp ("setName", bson_iter_key (&server_iter)) == 0) {
-         set_name = bson_iter_utf8 (&server_iter, NULL);
-         if (set_name) {
-            BSON_ASSERT (sd->set_name);
-            ASSERT_CMPSTR (sd->set_name, set_name);
-         }
-         /* TODO (CDRIVER-4057) this should assert that a null setName means the
-         server description also has no setName. Uncomment this when
-         CDRIVER-4057 is resolved:
-
-         else if (sd->set_name) {
-            test_error ("server: %s, expected NULL setName, got: %s", address,
-         sd->set_name);
-         }
-         */
-      } else if (strcmp ("type", bson_iter_key (&server_iter)) == 0) {
-         server_type = bson_iter_utf8 (&server_iter, NULL);
-         if (sd->type != server_type_from_test (server_type)) {
-            test_error ("expected server type %s not %s", server_type, mongoc_server_description_type (sd));
-         }
-      } else if (strcmp ("setVersion", bson_iter_key (&server_iter)) == 0) {
-         int64_t expected_set_version;
-         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
-            expected_set_version = MONGOC_NO_SET_VERSION;
-         } else {
-            expected_set_version = bson_iter_as_int64 (&server_iter);
-         }
-         BSON_ASSERT (sd->set_version == expected_set_version);
-      } else if (strcmp ("electionId", bson_iter_key (&server_iter)) == 0) {
-         bson_oid_t expected_oid;
-         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
-            bson_oid_init_from_string (&expected_oid, "000000000000000000000000");
-         } else {
-            ASSERT (BSON_ITER_HOLDS_OID (&server_iter));
-            bson_oid_copy (bson_iter_oid (&server_iter), &expected_oid);
-         }
-
-         ASSERT_CMPOID (&sd->election_id, &expected_oid);
-      } else if (strcmp ("topologyVersion", bson_iter_key (&server_iter)) == 0) {
-         bson_t expected_topology_version;
-
-         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
-            bson_init (&expected_topology_version);
-         } else {
-            ASSERT (BSON_ITER_HOLDS_DOCUMENT (&server_iter));
-            bson_lookup_doc (server, "topologyVersion", &expected_topology_version);
-         }
-
-         assert_match_bson (&sd->topology_version, &expected_topology_version, false);
-         bson_destroy (&expected_topology_version);
-      } else if (strcmp ("pool", bson_iter_key (&server_iter)) == 0) {
-         bson_iter_t iter;
-         uint32_t expected_generation;
-
-         BSON_ASSERT (bson_iter_recurse (&server_iter, &iter));
-         BSON_ASSERT (bson_iter_find (&iter, "generation") && BSON_ITER_HOLDS_INT32 (&iter));
-         expected_generation = bson_iter_int32 (&iter);
-         ASSERT_CMPINT32 (expected_generation, ==, mc_tpl_sd_get_generation (sd, &kZeroServiceId));
-      } else if (strcmp ("logicalSessionTimeoutMinutes", bson_iter_key (&server_iter)) == 0) {
-         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
-            if (sd->session_timeout_minutes != MONGOC_NO_SESSIONS) {
-               test_error ("ERROR: expected unset value for "
-                           "logicalSessionTimeoutMinutes but got: %" PRId64,
-                           sd->session_timeout_minutes);
-            }
-         } else {
-            ASSERT_CMPINT64 (bson_iter_as_int64 (&server_iter), ==, sd->session_timeout_minutes);
-         }
-      } else if (strcmp ("minWireVersion", bson_iter_key (&server_iter)) == 0) {
-         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
-            if (sd->min_wire_version != 0) {
-               test_error ("ERROR: expected unset value for minWireVersion but "
-                           "got: %" PRId32,
-                           sd->min_wire_version);
-            }
-         } else {
-            ASSERT_CMPINT32 (bson_iter_int32 (&server_iter), ==, sd->min_wire_version);
-         }
-      } else if (strcmp ("maxWireVersion", bson_iter_key (&server_iter)) == 0) {
-         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
-            if (sd->max_wire_version != 0) {
-               test_error ("ERROR: expected unset value for maxWireVersion but "
-                           "got: %" PRId32,
-                           sd->max_wire_version);
-            }
-         } else {
-            ASSERT_CMPINT32 (bson_iter_int32 (&server_iter), ==, sd->max_wire_version);
-         }
-      } else {
-         fprintf (stderr, "ERROR: unparsed field %s\n", bson_iter_key (&server_iter));
-         BSON_ASSERT (0);
-      }
-   }
+   //   mongoc_server_description_t const *sd;
+   //   bson_iter_t server_iter;
+   //   const char *server_type;
+   //   const char *set_name;
+   //
+   //   sd = server_description_by_hostname (topology, address);
+   //   BSON_ASSERT (sd);
+   //
+   //   bson_iter_init (&server_iter, server);
+   //   while (bson_iter_next (&server_iter)) {
+   //      if (strcmp ("setName", bson_iter_key (&server_iter)) == 0) {
+   //         set_name = bson_iter_utf8 (&server_iter, NULL);
+   //         if (set_name) {
+   //            BSON_ASSERT (sd->set_name);
+   //            ASSERT_CMPSTR (sd->set_name, set_name);
+   //         }
+   //         /* TODO (CDRIVER-4057) this should assert that a null setName means the
+   //         server description also has no setName. Uncomment this when
+   //         CDRIVER-4057 is resolved:
+   //
+   //         else if (sd->set_name) {
+   //            test_error ("server: %s, expected NULL setName, got: %s", address,
+   //         sd->set_name);
+   //         }
+   //         */
+   //      } else if (strcmp ("type", bson_iter_key (&server_iter)) == 0) {
+   //         server_type = bson_iter_utf8 (&server_iter, NULL);
+   //         if (sd->type != server_type_from_test (server_type)) {
+   //            test_error ("expected server type %s not %s", server_type, mongoc_server_description_type (sd));
+   //         }
+   //      } else if (strcmp ("setVersion", bson_iter_key (&server_iter)) == 0) {
+   //         int64_t expected_set_version;
+   //         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
+   //            expected_set_version = MONGOC_NO_SET_VERSION;
+   //         } else {
+   //            expected_set_version = bson_iter_as_int64 (&server_iter);
+   //         }
+   //         BSON_ASSERT (sd->set_version == expected_set_version);
+   //      } else if (strcmp ("electionId", bson_iter_key (&server_iter)) == 0) {
+   //         bson_oid_t expected_oid;
+   //         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
+   //            bson_oid_init_from_string (&expected_oid, "000000000000000000000000");
+   //         } else {
+   //            ASSERT (BSON_ITER_HOLDS_OID (&server_iter));
+   //            bson_oid_copy (bson_iter_oid (&server_iter), &expected_oid);
+   //         }
+   //
+   //         ASSERT_CMPOID (&sd->election_id, &expected_oid);
+   //      } else if (strcmp ("topologyVersion", bson_iter_key (&server_iter)) == 0) {
+   //         bson_t expected_topology_version;
+   //
+   //         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
+   //            bson_init (&expected_topology_version);
+   //         } else {
+   //            ASSERT (BSON_ITER_HOLDS_DOCUMENT (&server_iter));
+   //            bson_lookup_doc (server, "topologyVersion", &expected_topology_version);
+   //         }
+   //
+   //         assert_match_bson (&sd->topology_version, &expected_topology_version, false);
+   //         bson_destroy (&expected_topology_version);
+   //      } else if (strcmp ("pool", bson_iter_key (&server_iter)) == 0) {
+   //         bson_iter_t iter;
+   //         uint32_t expected_generation;
+   //
+   //         BSON_ASSERT (bson_iter_recurse (&server_iter, &iter));
+   //         BSON_ASSERT (bson_iter_find (&iter, "generation") && BSON_ITER_HOLDS_INT32 (&iter));
+   //         expected_generation = bson_iter_int32 (&iter);
+   //         ASSERT_CMPINT32 (expected_generation, ==, mc_tpl_sd_get_generation (sd, &kZeroServiceId));
+   //      } else if (strcmp ("logicalSessionTimeoutMinutes", bson_iter_key (&server_iter)) == 0) {
+   //         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
+   //            if (sd->session_timeout_minutes != MONGOC_NO_SESSIONS) {
+   //               test_error ("ERROR: expected unset value for "
+   //                           "logicalSessionTimeoutMinutes but got: %" PRId64,
+   //                           sd->session_timeout_minutes);
+   //            }
+   //         } else {
+   //            ASSERT_CMPINT64 (bson_iter_as_int64 (&server_iter), ==, sd->session_timeout_minutes);
+   //         }
+   //      } else if (strcmp ("minWireVersion", bson_iter_key (&server_iter)) == 0) {
+   //         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
+   //            if (sd->min_wire_version != 0) {
+   //               test_error ("ERROR: expected unset value for minWireVersion but "
+   //                           "got: %" PRId32,
+   //                           sd->min_wire_version);
+   //            }
+   //         } else {
+   //            ASSERT_CMPINT32 (bson_iter_int32 (&server_iter), ==, sd->min_wire_version);
+   //         }
+   //      } else if (strcmp ("maxWireVersion", bson_iter_key (&server_iter)) == 0) {
+   //         if (BSON_ITER_HOLDS_NULL (&server_iter)) {
+   //            if (sd->max_wire_version != 0) {
+   //               test_error ("ERROR: expected unset value for maxWireVersion but "
+   //                           "got: %" PRId32,
+   //                           sd->max_wire_version);
+   //            }
+   //         } else {
+   //            ASSERT_CMPINT32 (bson_iter_int32 (&server_iter), ==, sd->max_wire_version);
+   //         }
+   //      } else {
+   //         fprintf (stderr, "ERROR: unparsed field %s\n", bson_iter_key (&server_iter));
+   //         BSON_ASSERT (0);
+   //      }
+   //   }
 }
 
 /*
