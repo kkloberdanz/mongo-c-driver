@@ -1816,6 +1816,7 @@ _mongoc_cluster_auth_node (mongoc_cluster_t *cluster,
    } else if (0 == strcasecmp (mechanism, "MONGODB-OIDC")) {
       fprintf (stderr, "CALLING _mongoc_cluster_auth_node_oidc from cluster auth node\n");
       ret = _mongoc_cluster_auth_node_oidc (cluster, stream, sd, error);
+      fprintf (stderr, ">>> 4 GOT ERROR CODE FROM SERVER: %d MESSAGE: %s\n", error->code, error->message);
    } else {
       bson_set_error (error,
                       MONGOC_ERROR_CLIENT,
@@ -1934,8 +1935,6 @@ _mongoc_cluster_finish_speculative_auth (mongoc_cluster_t *cluster,
    }
 
    if (strcasecmp (mechanism, "MONGODB-OIDC") == 0) {
-      /* For OIDC, a successful hello with speculativeAuthenticate field
-       * indicates successful auth */
       ret = true;
       auth_handled = true;
    }
