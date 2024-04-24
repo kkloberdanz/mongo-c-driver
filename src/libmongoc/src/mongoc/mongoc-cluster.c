@@ -3335,6 +3335,7 @@ _mongoc_cluster_run_opmsg_recv (
    BSON_ASSERT_PARAM (error);
 
    bool ret = false;
+   bson_t body = BSON_INITIALIZER;
 
    mongoc_server_stream_t *const server_stream = cmd->server_stream;
 
@@ -3403,8 +3404,6 @@ _mongoc_cluster_run_opmsg_recv (
       _mongoc_buffer_init (&buffer, decompressed_data, decompressed_data_len, NULL, NULL);
    }
 
-   bson_t body;
-
    uint32_t op_msg_flags = mcd_rpc_op_msg_get_flag_bits (rpc);
    cluster->client->in_exhaust = op_msg_flags & MONGOC_OP_MSG_FLAG_MORE_TO_COME;
 
@@ -3425,9 +3424,9 @@ _mongoc_cluster_run_opmsg_recv (
    }
 
    bson_copy_to (&body, reply);
-   bson_destroy (&body);
 
 done:
+   bson_destroy (&body);
    _mongoc_buffer_destroy (&buffer);
 
    return ret;

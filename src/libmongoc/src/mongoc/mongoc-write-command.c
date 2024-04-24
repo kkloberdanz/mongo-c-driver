@@ -556,7 +556,7 @@ _mongoc_write_opmsg (mongoc_write_command_t *command,
    mongoc_cmd_parts_t parts;
    bson_iter_t iter;
    bson_t cmd;
-   bson_t reply;
+   bson_t reply = BSON_INITIALIZER;
    bool ret = false;
    int32_t max_msg_size;
    int32_t max_bson_obj_size;
@@ -686,7 +686,7 @@ _mongoc_write_opmsg (mongoc_write_command_t *command,
             bson_t reply;
             bson_error_t error;
             bool set;
-         } original_error = {.reply = {0}, .error = {0}, .set = false};
+         } original_error = {.reply = BSON_INITIALIZER, .error = {0}, .set = false};
 
       retry:
          ret = mongoc_cluster_run_command_monitored (&client->cluster, &parts.assembled, &reply, error);
@@ -795,6 +795,8 @@ _mongoc_write_opmsg (mongoc_write_command_t *command,
       /* if a retry succeeded, clear the initial error */
       memset (&result->error, 0, sizeof (bson_error_t));
    }
+
+   bson_destroy (&reply);
 
    EXIT;
 }
