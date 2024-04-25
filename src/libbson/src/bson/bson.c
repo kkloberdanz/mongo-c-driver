@@ -2108,7 +2108,6 @@ bson_destroy (bson_t *bson)
 
    if (!(bson->flags & (BSON_FLAG_RDONLY | BSON_FLAG_INLINE | BSON_FLAG_NO_FREE))) {
       bson_free (*((bson_impl_alloc_t *) bson)->buf);
-      *((bson_impl_alloc_t *) bson)->buf = NULL;
    }
 
 #ifdef BSON_MEMCHECK

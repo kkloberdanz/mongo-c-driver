@@ -556,7 +556,6 @@ _mongoc_write_opmsg (mongoc_write_command_t *command,
    mongoc_cmd_parts_t parts;
    bson_iter_t iter;
    bson_t cmd;
-   bson_t reply;
    bool ret = false;
    int32_t max_msg_size;
    int32_t max_bson_obj_size;
@@ -664,6 +663,7 @@ _mongoc_write_opmsg (mongoc_write_command_t *command,
       }
 
       if (ship_it) {
+         bson_t reply = BSON_INITIALIZER;
          /* Seek past the document offset we have already sent */
          parts.assembled.payload = command->payload.data + payload_total_offset;
          /* Only send the documents up to this size */
