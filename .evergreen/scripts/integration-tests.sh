@@ -28,9 +28,7 @@ DIR=$(dirname $0)
 # mongoc/.evergreen/scripts -> drivers-evergreen-tools/.evergreen/download-mongodb.sh
 . $DIR/../../../drivers-evergreen-tools/.evergreen/download-mongodb.sh
 
-# Setup OIDC token in /tmp/tokens/
-export AWS_PROFILE="drivers-test-secrets-role-857654397073"
-$DIR/../../../drivers-evergreen-tools/.evergreen/auth_oidc/oidc_get_tokens.sh
+./setup-oidc-tokens.sh
 
 get_distro
 get_mongodb_download_url_for "$DISTRO" "$MONGODB_VERSION"
