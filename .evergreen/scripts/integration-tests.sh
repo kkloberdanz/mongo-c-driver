@@ -28,7 +28,8 @@ DIR=$(dirname $0)
 # mongoc/.evergreen/scripts -> drivers-evergreen-tools/.evergreen/download-mongodb.sh
 . $DIR/../../../drivers-evergreen-tools/.evergreen/download-mongodb.sh
 
-./setup-oidc-tokens.sh
+pwd
+./.evergreen/scripts/setup-oidc-tokens.sh
 
 get_distro
 get_mongodb_download_url_for "$DISTRO" "$MONGODB_VERSION"
