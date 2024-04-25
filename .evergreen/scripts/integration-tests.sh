@@ -28,11 +28,23 @@ DIR=$(dirname $0)
 # mongoc/.evergreen/scripts -> drivers-evergreen-tools/.evergreen/download-mongodb.sh
 . $DIR/../../../drivers-evergreen-tools/.evergreen/download-mongodb.sh
 
-echo "WORKING DIRECTORY IS:"
-pwd
-echo "FINDING SCRIPT:"
-find . -name "setup-oidc-token.sh"
-./.evergreen/scripts/setup-oidc-tokens.sh
+# Because drivers-evergreen-tools refers to python3 as python, we must be sure
+# that we both have a python3 interpreter installed and also ensure that
+# invoking 'python' will use a Python 3 interpreter.
+if [[ "$(python3 --version)" =~ "Python 3" ]]; then
+    echo "Python 3 is installed"
+    python3 --version
+    virtualenv venv -p `which python3`
+    . venv/bin/activate
+
+    # Setup OIDC token in /tmp/tokens/
+    export AWS_PROFILE="drivers-test-secrets-role-857654397073"
+    $DIR/../../../drivers-evergreen-tools/.evergreen/auth_oidc/oidc_get_tokens.sh
+
+    deactivate
+fi
+    echo "Python 3 is NOT installed"
+else
 
 get_distro
 get_mongodb_download_url_for "$DISTRO" "$MONGODB_VERSION"
