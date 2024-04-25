@@ -28,7 +28,10 @@ DIR=$(dirname $0)
 # mongoc/.evergreen/scripts -> drivers-evergreen-tools/.evergreen/download-mongodb.sh
 . $DIR/../../../drivers-evergreen-tools/.evergreen/download-mongodb.sh
 
+echo "WORKING DIRECTORY IS:"
 pwd
+echo "FINDING SCRIPT:"
+find . -name "setup-oidc-token.sh"
 ./.evergreen/scripts/setup-oidc-tokens.sh
 
 get_distro
