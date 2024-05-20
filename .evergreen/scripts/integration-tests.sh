@@ -142,8 +142,10 @@ wait_for_mongo_orchestration() {
    for i in $(seq 300); do
       # Exit code 7: "Failed to connect to host".
       if curl -s "localhost:$1" 1>|curl_mo.txt; test $? -ne 7; then
+         echo "CURL SUCCESSFUL"
          return 0
       else
+         echo "CURL FAILED, RETRYING"
          sleep 1
       fi
    done
